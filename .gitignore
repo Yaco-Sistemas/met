@@ -4,3 +4,4 @@
 *.swp
 local_settings.py
 *.egg-info
+met/media/
