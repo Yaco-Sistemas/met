@@ -52,7 +52,7 @@ def metadata_edit(request, metadata_id=None):
 
 
 def federations_list(request):
-    federations = Federations.objects.all()
+    federations = Federation.objects.all()
 
     return render_to_response('metadataparser/federations_list.html', {
            'federations': federations,
@@ -60,9 +60,9 @@ def federations_list(request):
 
 
 def federation_view(request, federation_id):
-    federation = get_object_or_404(Federation, id=metadata_id)
+    federation = get_object_or_404(Federation, id=federation_id)
     return render_to_response('metadataparser/federation_view.html',
-            {'federation': federations,
+            {'federation': federation,
             }, context_instance=RequestContext(request))
 
 
@@ -93,7 +93,7 @@ def federation_edit(request, federation_id=None):
 
 
 def entities_list(request, federation_id):
-    entities = Entities.objects.all()
+    entities = Entity.objects.all()
 
     return render_to_response('metadataparser/entities_list.html', {
            'entities': entities,
@@ -101,9 +101,11 @@ def entities_list(request, federation_id):
 
 
 def entity_view(request, federation_id, entity_id):
-    entity = get_object_or_404(Entity, id=metadata_id)
+    entity = get_object_or_404(Entity, id=entity_id)
+    federation = get_object_or_404(Federation, id=federation_id)
     return render_to_response('metadataparser/federation_view.html',
-            {'federation': federations,
+            {'federation': federation,
+             'entity': entity,
             }, context_instance=RequestContext(request))
 
 

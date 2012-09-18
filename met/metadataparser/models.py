@@ -1,7 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
 
 
 class Metadata(models.Model):
@@ -12,12 +10,12 @@ class Metadata(models.Model):
 
     def __unicode__(self):
         return self.url or u"Metadata %s" % self.id
-  i
+
 
 class Federation(models.Model):
     organization = models.CharField(blank=True, null=True, max_length=200,
                                     verbose_name=_(u'Organization'))
-    organization_link = models.URLField(blank=True, null=True
+    organization_link = models.URLField(blank=True, null=True,
                                         verbose_name='Organization url')
     metadata_file = models.OneToOneField(Metadata, blank=True, null=True,
                                          verbose_name=_(u'Metadata file'))
@@ -35,6 +33,7 @@ class Entity(models.Model):
     ENTITY_TYPE = (
             ('idp', _('Identity provider')),
             ('sp', _('Service provider')),
+        )
 
     name = models.CharField(blank=False,
                             verbose_name=_(u'Name'))
@@ -44,7 +43,7 @@ class Entity(models.Model):
                                   verbose_name=_(u'Entity Type'))
     metadata_file = models.ForeignKey(Metadata, blank=True, null=True,
                                       verbose_name=_(u'Metadata file'))
-    federation = models.ForeignKey(Feration, blank=True, null=True,
+    federation = models.ForeignKey(Federation, blank=True, null=True,
                                    verbose_name=_(u'Entity group'))
 
     class Meta:
