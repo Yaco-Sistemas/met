@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<section>
+<h1>{% trans "Metadata Explorer Tool" %}</h1>
+<h2>{{ form.instance }}</h2>
+</section>
+<ul>
+
+<form action="{% url metadata_add %}"
+      enctype="multipart/form-data"
+      method="post">{% csrf_token %}
+{{ form.non_field_errors }}
+{% for field in form %}
+<fieldset class="control-group">
+    <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+    <div class="controls">
+        {{ field }}
+        <p class="help-text">{{ field.help_text }} </p>
+        {% if field.errors %}
+        <span class="help-inline">
+                {% for error in field.errors %}{{ error }}{% endfor %}
+        </span>
+        {% endif %}
+    </div>
+</fieldset>
+{% endfor %}
+<input type="submit" value="Submit" />
+</form>
+</ul>
+{% endblock %}

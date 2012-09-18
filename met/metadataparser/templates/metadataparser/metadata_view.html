@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<section>
+<h1>{% trans "Metadata Explorer Tool" %}</h1>
+<h2>{{ metadata }}</h2>
+<a href="{% url metadata_edit metadata.id %}">{% trans "edit" %}</a>
+</section>
+<ul>
+    <li><label>URL:</label> {{ metadata.url }}</li>
+    <li><label>File:</label> {{ metadata.file }}</li>
+    <li><label>Owner:</label> {{ metadata.owner }}</li>
+    <li><label>Creation time:</label> {{ metadata.creation_time }}</li>
+    <li><label>Modificationtime:</label> {{ metadata.modification_time }}</li>
+</ul>
+{% endblock %}

@@ -17,6 +17,9 @@ class Metadata(models.Model):
     modification_time = models.DateTimeField(verbose_name=_(u'Modification time'),
                                              auto_now=True)
 
+    def __unicode__(self):
+        return self.url or u"Metadata %s" % self.id
+
 
 class Entity(models.Model):
 
