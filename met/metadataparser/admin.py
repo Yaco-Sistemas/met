@@ -4,18 +4,15 @@ from met.metadataparser.models import Metadata, Entity, EntityGroup
 
 
 class MetadataAdmin(admin.ModelAdmin):
+    pass
 
-    list_display = ('owner', 'creation_time', 'modification_time')
-
+class FederationAdmin(admin.ModelAdmin):
+    pass
 
 class EntityAdmin(admin.ModelAdmin):
     pass
 
 
-class EntityGroupAdmin(admin.ModelAdmin):
-    pass
-
-
+admin.site.register(Federation, FederationAdmin)
 admin.site.register(Metadata, MetadataAdmin)
 admin.site.register(Entity, EntityAdmin)
-admin.site.register(EntityGroup, EntityGroupAdmin)
