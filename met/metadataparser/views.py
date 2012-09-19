@@ -35,7 +35,11 @@ def metadata_edit(request, metadata_id=None):
         form = MetadataForm(request.POST, request.FILES, instance=metadata)
         if form.is_valid():
             form.save()
-            messages.success(request, _('Metadata created succesfully'))
+            if metadata:
+                messages.success(request, _('Metadata modified succesfully'))
+            else:
+                messages.success(request, _('Metadata created succesfully'))
+
             metadata = form.instance
             url = reverse('metadata_view', args=[metadata.id])
             return HttpResponseRedirect(url)
@@ -85,7 +89,11 @@ def federation_edit(request, federation_id=None):
         form = FederationForm(request.POST, request.FILES, instance=federation)
         if form.is_valid():
             form.save()
-            messages.success(request, _('Federation created succesfully'))
+            if federation:
+                messages.success(request, _('Federation modified succesfully'))
+            else:
+                messages.success(request, _('Federation created succesfully'))
+
             federation = form.instance
             url = reverse('federation_view', args=[federation.id])
             return HttpResponseRedirect(url)
@@ -141,7 +149,10 @@ def entity_edit(request, federation_id, entity_id=None):
             form.save()
             form.instance.federation = federation
             form.instance.save()
-            messages.success(request, _('Federation created succesfully'))
+            if entity:
+                messages.success(request, _('Entity modified succesfully'))
+            else:
+                messages.success(request, _('Entity created succesfully'))
             entity = form.instance
             url = reverse('entity_view', args=[federation.id, entity.id])
             return HttpResponseRedirect(url)
