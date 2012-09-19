@@ -3,7 +3,11 @@
 
 
 {% block content %}
-<section>
-<h1>{% trans "Metadata Explorer Tool" %}</h1>
-</section>
+
+<ul class="unstylesd">
+  <li><a href="{% url metadatas_list %}">Metadatas list</a></li>
+
+  <li><a href="{% url federations_list %}">Federations list</a></li>
+</ul>
+
 {% endblock %}
