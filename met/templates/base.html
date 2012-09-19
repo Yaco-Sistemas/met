@@ -1,15 +1,19 @@
-{% load i18n %}<!doctype html>
-
-<html lang="en">
-
+{% load i18n %}
+<!DOCTYPE html>
+<html>
   <head>
     <meta charset="utf-8">
-    <title>PEER</title>
-    <meta name="description" content="Metadata Explorer Tool">
+    <title>{% trans "Metadata Explorer Tool" %}</title>
+    <meta name="description" content="{% trans "Metadata Explorer Tool" %}">
     <meta name="author" content="Terena">
+
+    <!-- Botstrap -->
+     <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
   {% block content %}
   {% endblock %}
+    <script src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
   </body>
 </html>
