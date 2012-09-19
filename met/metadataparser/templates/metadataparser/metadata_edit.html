@@ -1,22 +1,20 @@
 {% extends "metadataparser/base_metadataparser.html" %}
 {% load i18n metadataparsertags %}
 
-{% block content %}
-<section>
-<h1>{% trans "Metadata Explorer Tool" %}</h1>
+{% block appendheader %}
 {% if form.instance.id %}
 <h2>{{ form.instance }}</h2>
 {% else %}
 <h2>{% trans "New Metadata" %}</h2>
 {% endif %}
-</section>
+{% endblock %}
 
-{% bootstrap_form form %}
-
+{% block content %}
 {% if form.instance.id %}
-  <a href="{% url metadata_delete form.instance.id %}">{% trans "delete" %}</a>
-  <a href="{% url metadata_view form.instance.id %}">{% trans "cancel" %}</a>
+  {% url metadata_delete form.instance.id as delete_link %}
+  {% url metadata_view form.instance.id as cancel_link %}
 {% else %}
-  <a href="{% url metadatas_list %}">{% trans "cancel" %}</a>
+  {% url metadatas_list federation.id as cancel_link %}
 {% endif %}
+{% bootstrap_form form cancel_link delete_link %}
 {% endblock %}

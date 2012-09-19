@@ -1,18 +1,29 @@
-<form action="." enctype="multipart/form-data" method="post">{% csrf_token %}
+{% load i18n %}
+<form action="." class="form-horizontal"
+     enctype="multipart/form-data" method="post">{% csrf_token %}
 {{ form.non_field_errors }}
-{% for field in form %}
+{% for hidden in form.hidden_fields %}
+{{ hidden }}
+{% endfor %}
+{% for field in form.visible_fields %}
 <fieldset class="control-group">
     <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
     <div class="controls">
         {{ field }}
-        <p class="help-text">{{ field.help_text }} </p>
+        <p class="help-text"> {{ field.help_text }} </p>
         {% if field.errors %}
         <span class="help-inline">
-                {% for error in field.errors %}{{ error }}{% endfor %}
+          {% for error in field.errors %}{{ error }}{% endfor %}
         </span>
         {% endif %}
     </div>
 </fieldset>
 {% endfor %}
-<input type="submit" value="Submit" />
+<div class="form-actions">
+  <button class="btn" type="submit">{% trans "Submit" %}</button>
+{% if delete_link %}
+  <a class="btn" href="{{ delete_link }}">{% trans "Delete" %}</a>
+{% endif %}
+  <a class="btn" href="{{ cancel_link }}">{% trans "Cancel" %}</a>
+</div>
 </form>

@@ -1,19 +1,39 @@
-{% load i18n %}
 <!DOCTYPE html>
+{% load i18n %}
 <html>
   <head>
     <meta charset="utf-8">
     <title>{% trans "Metadata Explorer Tool" %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="description" content="{% trans "Metadata Explorer Tool" %}">
     <meta name="author" content="Terena">
 
     <!-- Botstrap -->
-     <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
   </head>
   <body>
-  {% block content %}
-  {% endblock %}
+    <div class="container">
+      <div class="row">
+        <header>
+        {% block header %}
+        <h1>{% trans "Metadata Explorer Tool" %}</h1>
+        {% endblock %}
+        {% block appendheader %}
+        {% endblock %}
+        </header>
+      </div>
+      <div class="row">
+        <sidebar class="span4">
+        {% block sidebar %}
+        {% endblock %}
+        </sidebar>
+        <section class="span12">
+          {% block content %}
+          {% endblock %}
+        </section>
+     </div>
+    </div>
     <script src="{{ STATIC_URL }}js/jquery-1.8.1.min.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
   </body>
 </html>
