@@ -1,11 +1,11 @@
 {% extends "metadataparser/base_metadataparser.html" %}
 {% load i18n %}
 
+{% block appendheader %}
+<h2>{% trans "Federations" %}</h2>
+{% endblock %}
+
 {% block content %}
-<section>
-<h1>{% trans "Metadata Explorer Tool" %}</h1>
-<h2>{% trans "Federations" %}<h2>
-</section>
 <ul>
   {% for federation in federations %}
   <li>

@@ -1,26 +1,32 @@
 {% extends "metadataparser/base_metadataparser.html" %}
 {% load i18n %}
 
+{% block appendheader %}
+<h2>{% trans "Entity" %} {{ entity }}</h2>
+{% endblock %}
+
 {% block content %}
-<section>
-<h2>{{ entity }}</h2>
-<a href="{% url entities_list federation.id %}">{% trans "list entities"%}</a>
+<a href="{% url entities_list federation.id %}">{% trans "entities list"%}</a> |
 <a href="{% url entity_edit federation.id entity.id %}">{% trans "edit" %}</a>
-</section>
-<ul>
-  <li><label>{% trans "name" %}:</label> {{ entity.url }}</li>
-  <li><label>{% trans "EntityID" %}:</label> {{ entity.entityid }}</li>
-  <li><label>{% trans "Entity Type" %}:</label> {{ entity.entity_type }}</li>
-  <li>
-      <label>{% trans "Federation" %}:</label>
-      <a href="{% url federation_view entity.federation.id %}">{{ entity.federation }}</a>
-  </li>
+
+<dl class="dl-horizontal">
+  <dt>{% trans "Name" %}</dt>
+  <dd>{{ entity }}</dd>
+
+  <dt>{% trans "EntityID" %}</dt>
+  <dd>{{ entity.entityid }}</dd>
+
+  <dt>{% trans "Entity Type" %}</dt>
+  <dd>{{ entity.entity_type }}</dd>
+
+  <dt>{% trans "Federation" %}</dt>
+  <dd><a href="{% url federation_view entity.federation.id %}">{{ entity.federation }}</a></dd>
+
   {% if entity.metadata_file %}
-  <li>
-      <label>{% trans "Metadata File" %}:</label>
-      <a href="{% url metadata_view entity.metadata_file.id %}">{{ entity.metadata_file }}</a>
-  </li>
+  <dt>{% trans "Metadata File" %}</dt>
+  <dd><a href="{% url metadata_view entity.metadata_file.id %}">{{ entity.metadata_file }}</a></dd>
   {% endif %}
 </ul>
+
 {% endblock %}
 

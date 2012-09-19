@@ -1,11 +1,12 @@
 {% extends "metadataparser/base_metadataparser.html" %}
 {% load i18n %}
 
+{% block appendheader %}
+<h2>{% blocktrans %}{{federation}} federation entities{% endblocktrans %}</h2>
+{% endblock %}
+
 {% block content %}
-<section>
-<h2>{% trans "Entities federation" %}</h2>
 <a href="{% url federation_view federation.id %}">{{ federation.name }}</a>
-</section>
 <ul>
   {% for entity in entities %}
   <li>
