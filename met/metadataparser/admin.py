@@ -1,13 +1,15 @@
 from django.contrib import admin
 
-from met.metadataparser.models import Metadata, Entity, EntityGroup
+from met.metadataparser.models import Metadata, Federation, Entity
 
 
 class MetadataAdmin(admin.ModelAdmin):
     pass
 
+
 class FederationAdmin(admin.ModelAdmin):
     pass
+
 
 class EntityAdmin(admin.ModelAdmin):
     pass

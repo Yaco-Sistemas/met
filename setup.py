@@ -55,6 +55,7 @@ setup(name='met',
           'Django>=1.4',
           'psycopg2==2.4.5',
           'lxml==2.3.5',
+          'PIL',
       ],
       entry_points="""
       # -*- Entry points: -*-

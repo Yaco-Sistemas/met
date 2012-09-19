@@ -4,14 +4,14 @@
 {% block content %}
 <section>
 <h1>{% trans "Metadata Explorer Tool" %}</h1>
-<h2>{% trans "Metadatas" %}<h2>
+<h2>{% trans "Federations" %}<h2>
 </section>
 <ul>
-  {% for metadata in metadatas %}
+  {% for federation in federations %}
   <li>
-    <a href="{% url metadata_view metadata.id %}">{{ metadata }}</a>
+    <a href="{% url federation_view federation.id %}">{{ federation }}</a>
   </li>
   {% endfor %}
 </ul>
-<a href="{% url metadata_add %}">{% trans "add" %}</a>
+<a href="{% url federation_add %}">{% trans "add" %}</a>
 {% endblock %}

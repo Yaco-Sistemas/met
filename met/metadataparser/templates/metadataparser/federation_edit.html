@@ -7,16 +7,16 @@
 {% if form.instance.id %}
 <h2>{{ form.instance }}</h2>
 {% else %}
-<h2>{% trans "New Metadata" %}</h2>
+<h2>{% trans "Add federation" %}</h2>
 {% endif %}
 </section>
 
 {% bootstrap_form form %}
 
 {% if form.instance.id %}
-  <a href="{% url metadata_delete form.instance.id %}">{% trans "delete" %}</a>
-  <a href="{% url metadata_view form.instance.id %}">{% trans "cancel" %}</a>
+  <a href="{% url federation_delete form.instance.id %}">{% trans "delete" %}</a>
+  <a href="{% url federation_view form.instance.id %}">{% trans "cancel" %}</a>
 {% else %}
-  <a href="{% url metadatas_list %}">{% trans "cancel" %}</a>
+  <a href="{% url federations_list %}">{% trans "cancel" %}</a>
 {% endif %}
 {% endblock %}

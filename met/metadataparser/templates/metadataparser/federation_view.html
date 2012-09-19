@@ -1,0 +1,22 @@
+{% extends "metadataparser/base_metadataparser.html" %}
+{% load i18n %}
+
+{% block content %}
+<section>
+<h1>{% trans "Metadata Explorer Tool" %}</h1>
+<h2>{{ federation }}</h2>
+<a href="{% url federation_edit federation.id %}">{% trans "edit" %}</a>
+</section>
+<ul>
+  <li><label>{% trans "Organization" %}:</label>
+     <a href="{{ federation.organization_link }}">{{ federation.organization.url }}</a>
+  </li>
+  <li><label>{% trans "Metadata file" %}:</label>
+    <a href="{% url metadata_view federation.metadata_file.id %}">{{ metadata}}</a>
+  </li>
+  <li><label>{% trans "Entities" %}:</label>
+    <a href="{% url entities_list federation.id %}">{% trans "Entities list"%}</a>
+  </li>
+
+</ul>
+{% endblock %}

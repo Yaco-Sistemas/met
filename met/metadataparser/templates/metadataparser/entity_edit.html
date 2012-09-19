@@ -1,0 +1,19 @@
+{% extends "metadataparser/base_metadataparser.html" %}
+{% load i18n metadataparsertags %}
+
+{% block content %}
+{% if form.instance.id %}
+<h2>{{ form.instance }}</h2>
+{% else %}
+<h2>{% trans "Add Entity" %}</h2>
+{% endif %}
+
+{% bootstrap_form form %}
+
+{% if form.instance.id %}
+  <a href="{% url entity_delete federation.id form.instance.id %}">{% trans "delete" %}</a>
+  <a href="{% url entity_view federation.id form.instance.id %}">{% trans "cancel" %}</a>
+{% else %}
+  <a href="{% url entities_list federation.id %}">{% trans "cancel" %}</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "metadataparser/base_metadataparser.html" %}
+{% load i18n %}
+
+{% block content %}
+<section>
+<h2>{{ entity }}</h2>
+<a href="{% url entities_list federation.id %}">{% trans "list entities"%}</a>
+<a href="{% url entity_edit federation.id entity.id %}">{% trans "edit" %}</a>
+</section>
+<ul>
+  <li><label>{% trans "name" %}:</label> {{ entity.url }}</li>
+  <li><label>{% trans "EntityID" %}:</label> {{ entity.entityid }}</li>
+  <li><label>{% trans "Entity Type" %}:</label> {{ entity.entity_type }}</li>
+  <li>
+      <label>{% trans "Federation" %}:</label>
+      <a href="{% url federation_view entity.federation.id %}">{{ entity.federation }}</a>
+  </li>
+  {% if entity.metadata_file %}
+  <li>
+      <label>{% trans "Metadata File" %}:</label>
+      <a href="{% url metadata_view entity.metadata_file.id %}">{{ entity.metadata_file }}</a>
+  </li>
+  {% endif %}
+</ul>
+{% endblock %}
+
