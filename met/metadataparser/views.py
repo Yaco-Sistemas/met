@@ -6,62 +6,8 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 
-from met.metadataparser.models import Metadata, Federation, Entity
-from met.metadataparser.forms import MetadataForm, FederationForm, EntityForm
-
-
-def metadatas_list(request):
-    metadatas = Metadata.objects.all()
-
-    return render_to_response('metadataparser/metadatas_list.html', {
-           'metadatas': metadatas,
-           }, context_instance=RequestContext(request))
-
-
-def metadata_view(request, metadata_id):
-    metadata = get_object_or_404(Metadata, id=metadata_id)
-    return render_to_response('metadataparser/metadata_view.html',
-            {'metadata': metadata,
-            }, context_instance=RequestContext(request))
-
-
-def metadata_edit(request, metadata_id=None):
-    if metadata_id is None:
-        metadata = None
-    else:
-        metadata = get_object_or_404(Metadata, id=metadata_id)
-
-    if request.method == 'POST':
-        form = MetadataForm(request.POST, request.FILES, instance=metadata)
-        if form.is_valid():
-            form.save()
-            if metadata:
-                messages.success(request, _('Metadata modified succesfully'))
-            else:
-                messages.success(request, _('Metadata created succesfully'))
-
-            metadata = form.instance
-            url = reverse('metadata_view', args=[metadata.id])
-            return HttpResponseRedirect(url)
-
-        else:
-            messages.error(request, _('Please correct the errors indicated'
-                                      ' below'))
-    else:
-        form = MetadataForm(instance=metadata)
-
-    return render_to_response('metadataparser/metadata_edit.html',
-                              {'form': form},
-                              context_instance=RequestContext(request))
-
-
-def metadata_delete(request, metadata_id):
-    metadata = get_object_or_404(Metadata, id=metadata_id)
-    messages.success(request,
-                     _(u"%(metadata)s metadata was deleted succesfully"
-                     % {'metadata': unicode(metadata)}))
-    metadata.delete()
-    return HttpResponseRedirect('metadatas_list')
+from met.metadataparser.models import Federation, Entity
+from met.metadataparser.forms import FederationForm, EntityForm
 
 
 def federations_list(request):
@@ -119,8 +65,8 @@ def federation_delete(request, federation_id):
 
 
 def entities_list(request, federation_id):
-    entities = Entity.objects.all()
     federation = get_object_or_404(Federation, id=federation_id)
+    entities = federation.entity_set.all()
     return render_to_response('metadataparser/entities_list.html', {
            'federation': federation,
            'entities': entities,

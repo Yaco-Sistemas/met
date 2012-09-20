@@ -1,21 +1,15 @@
 from django import forms
 
-from met.metadataparser.models import Metadata, Federation, Entity
-
-
-class MetadataForm(forms.ModelForm):
-
-    class Meta:
-        model=Metadata
+from met.metadataparser.models import Federation, Entity
 
 
 class FederationForm(forms.ModelForm):
 
     class Meta:
-        model=Federation
+        model = Federation
 
 
 class EntityForm(forms.ModelForm):
 
     class Meta:
-        model=Entity
+        model = Entity

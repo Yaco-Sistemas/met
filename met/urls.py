@@ -6,7 +6,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'met.portal.views.index', name='index'),
+    #url(r'^$', 'met.portal.views.index', name='index'),
+    url(r'^$', 'met.metadataparser.views.federations_list', name='index'),
     url(r'^met/', include('met.metadataparser.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

@@ -11,13 +11,12 @@
 
 <dl class="dl-horizontal">
   <dt>{% trans "Organization" %}</dt>
-  <dd><a href="{{ federation.organization_link }}">{{ federation.organization }}</a></dd>
+  <dd><a href="{{ federation.organization_link }}">{{ federation }}</a></dd>
 
   <dt>{% trans "Metadata file" %}</dt>
-  <dd><a href="{% url metadata_view federation.metadata_file.id %}">{{ federation.metadata_file }}</a></dd>
+  <dd><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "metadata file" %}</a></dd>
 
   <dt>{% trans "Entities" %}</dt>
   <dd><a href="{% url entities_list federation.id %}">{% trans "Entities list" %}</a></dd>
-
 </dl>
 {% endblock %}

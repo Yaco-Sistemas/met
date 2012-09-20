@@ -1,10 +1,6 @@
 from django.contrib import admin
 
-from met.metadataparser.models import Metadata, Federation, Entity
-
-
-class MetadataAdmin(admin.ModelAdmin):
-    pass
+from met.metadataparser.models import Federation, Entity
 
 
 class FederationAdmin(admin.ModelAdmin):
@@ -16,5 +12,4 @@ class EntityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Federation, FederationAdmin)
-admin.site.register(Metadata, MetadataAdmin)
 admin.site.register(Entity, EntityAdmin)
