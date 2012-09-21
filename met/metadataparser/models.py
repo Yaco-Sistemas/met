@@ -1,7 +1,9 @@
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+
 
 from met.metadataparser.xmlparser import ParseMetadata
 
@@ -57,12 +59,22 @@ class Federation(Base):
     name = models.CharField(blank=True, null=True, max_length=100,
                             verbose_name=_(u'Name'))
 
+    @property
+    def _metadata(self):
+        if not hasattr(self, '_metadata_cache'):
+            self._metadata_cache = self.load_file().get_federation()
+        return self._metadata_cache
+
     def __unicode__(self):
         return self.name
 
     def get_entity_metadata(self, entityid):
-        metadata = self.load_file()
-        return metadata.find_entity(entityid)
+        return self._metadata.find_entity(entityid)
+
+    def entities_iterator(self):
+        for entity in self.entity_set.all():
+            entity.load_metadata(federation=self)
+            yield entity
 
     def process_metadata(self):
         metadata = self.load_file()
@@ -71,17 +83,10 @@ class Federation(Base):
         if not metadata.is_federation:
             raise XmlDescriptionError("XML Haven't federation form")
 
-        metadata_federation = metadata.get_federation()
-        self._metadata = metadata
-        update_obj(metadata_federation, self)
+        update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
-        if not self._metadata:
-            metadata = self.load_file()
-            self._metadata = metadata
-
-        metadata_federation = self._metadata.get_federation()
-        entities_metadata = metadata_federation.get_entities()
+        entities_metadata = self._metadata.get_entities()
         for metadata_entity in entities_metadata:
             m_id = metadata_entity.entityid
             m_type = metadata_entity.entity_type
@@ -127,21 +132,25 @@ class Entity(Base):
     def __unicode__(self):
         return self.name or self.entityid
 
+    @property
+    def _metadata(self):
+        if not hasattr(self, '_metadata_cache'):
+            self.load_metadata()
+        return self._metadata_cache
+
     def load_metadata(self, federation=None):
-        if not hasattr(self, '_metadata'):
+        if not hasattr(self, '_metadata_cache'):
             if self.file:
-                self._metadata = self.load_file()
+                self._metadata_cache = self.load_file()
             else:
                 if not federation:
                     federations = self.federations.all()
                     if federations:
                         federation = federations[0]
-
-                    self._metadata = federation.get_entity_metadata(
-                                                           self.entityid)
-                else:
-                    self._metadata = None
-                    raise ValueError("Can't find entity metadata")
+                    else:
+                        raise ValueError("Can't find entity metadata")
+                self._metadata_cache = federation.get_entity_metadata(
+                                                                self.entityid)
 
     def _get_property(self, prop):
         self.load_metadata()

@@ -80,9 +80,12 @@ class ParseFederationMetadata(object):
     def __init__(self, etree):
         self.etree = etree
         self.valid_until = self.etree.get('validUntil', None)
-
         self.name = self.etree.get('Name', None)
         self.cache_duration = self.etree.get('cacheDuration', None)
+
+    def find_entity(self, entityid):
+        return ParseEntityMetadata(self.etree.find("%s[@entityID='%s']" % (
+                                    addns('EntityDescriptor'), entityid)))
 
     def get_entities(self):
         return [ParseEntityMetadata(entity_etree)

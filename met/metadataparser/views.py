@@ -66,10 +66,10 @@ def federation_delete(request, federation_id):
 
 def entities_list(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
-    entities = federation.entity_set.all()
+    #entities = federation.entity_set.all()
     return render_to_response('metadataparser/entities_list.html', {
            'federation': federation,
-           'entities': entities,
+    #       'entities': entities,
            }, context_instance=RequestContext(request))
 
 

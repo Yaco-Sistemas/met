@@ -56,6 +56,7 @@ setup(name='met',
           'psycopg2==2.4.5',
           'lxml==2.3.5',
           'PIL',
+          'python-memcached',
       ],
       entry_points="""
       # -*- Entry points: -*-
