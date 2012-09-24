@@ -1,5 +1,5 @@
 {% extends "metadataparser/base_metadataparser.html" %}
-{% load i18n %}
+{% load i18n metadataparsertags %}
 
 {% block appendheader %}
 <h2>{% trans "Federation" %} {{ federation }}</h2>
@@ -19,4 +19,21 @@
   <dt>{% trans "Entities" %}</dt>
   <dd><a href="{% url entities_list federation.id %}">{% trans "Entities list" %}</a></dd>
 </dl>
+
+<ul class="nav nav-tabs">
+  {% url federation_view federation.id as federation_url %}
+  <li {% if not entity_type %}class="active"{% endif %}>
+      <a href="{{ federation_url }}">{% trans "all" %}</a>
+  </li>
+
+  <li {% if entity_type == "idp" %}class="active"{% endif %}>
+    <a href="{{ federation_url }}?entity_type=idp">{% trans "Identity Provider" %}</a>
+  </li>
+
+  <li {% if entity_type == "sp" %}class="active{% endif %}">
+    <a href="{{ federation_url }}?entity_type=sp">{% trans "Service Provider" %}</a>
+  </li>
+</ul>
+{% entities_list federation entities page entity_type %}
+
 {% endblock %}

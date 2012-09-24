@@ -1,8 +1,9 @@
-from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save, post_save
+from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+
 
 
 from met.metadataparser.xmlparser import ParseMetadata
@@ -24,6 +25,7 @@ class Base(models.Model):
                                help_text=_(u'Url to fetch metadata file'))
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
+    ##  En entity es multitidioma
     logo = models.ImageField(upload_to='federation_logo', blank=True,
                              null=True, verbose_name=_(u'Federation logo'))
 
@@ -71,11 +73,6 @@ class Federation(Base):
     def get_entity_metadata(self, entityid):
         return self._metadata.find_entity(entityid)
 
-    def entities_iterator(self):
-        for entity in self.entity_set.all():
-            entity.load_metadata(federation=self)
-            yield entity
-
     def process_metadata(self):
         metadata = self.load_file()
         if not metadata:
@@ -102,6 +99,33 @@ class Federation(Base):
             entity.process_metadata(metadata_entity)
 
 
+class EntityQuerySet(QuerySet):
+
+    def iterator(self):
+        cached_federations = {}
+        for entity in super(EntityQuerySet, self).iterator():
+            #import ipdb; ipdb.set_trace()
+            if not entity.file:
+                federations = entity.federations.all()
+                if federations:
+                    federation = federations[0]
+                else:
+                    raise ValueError("Can't find entity metadata")
+
+                if federation.id in cached_federations:
+                    entity.load_metadata(federation=cached_federations[federation.id])
+                else:
+                    entity.load_metadata(federation=federation)
+                    cached_federations[federation.id] = federation
+
+            yield entity
+
+
+class EntityManager(models.Manager):
+    def get_query_set(self):
+        return EntityQuerySet(self.model, using=self._db)
+
+
 class Entity(Base):
 
     ENTITY_TYPE = (
@@ -116,6 +140,7 @@ class Entity(Base):
                                    verbose_name=_(u'Entity Type'))
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federation'))
+    objects = EntityManager()
 
     @property
     def Organization(self):

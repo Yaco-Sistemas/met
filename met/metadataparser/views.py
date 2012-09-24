@@ -20,8 +20,22 @@ def federations_list(request):
 
 def federation_view(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
+    entity_type = None
+    if (request.GET and 'entity_type' in request.GET):
+        entity_type = request.GET['entity_type']
+        entities = federation.entity_set.filter(entity_type=entity_type)
+    else:
+        entities = federation.entity_set.all()
+
+    page = None
+    if request.GET and 'page' in request.GET:
+        page = request.GET['page']
+
     return render_to_response('metadataparser/federation_view.html',
             {'federation': federation,
+             'entity_type': entity_type,
+             'entities': entities,
+             'page': page or 1,
             }, context_instance=RequestContext(request))
 
 
@@ -66,10 +80,10 @@ def federation_delete(request, federation_id):
 
 def entities_list(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
-    #entities = federation.entity_set.all()
+    entities = federation.entity_set.all()
     return render_to_response('metadataparser/entities_list.html', {
            'federation': federation,
-    #       'entities': entities,
+           'entities': entities,
            }, context_instance=RequestContext(request))
 
 

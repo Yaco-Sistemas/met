@@ -8,7 +8,7 @@
 {% block content %}
 <a href="{% url federation_view federation.id %}">{{ federation.name }}</a>
 <ul>
-  {% for entity in federation.entities_iterator %}
+  {% for entity in entities %}
   <li>
     <a href="{% url entity_view federation.id entity.id %}">{{ entity }}</a>
   </li>
