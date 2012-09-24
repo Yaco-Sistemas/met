@@ -23,15 +23,17 @@
 <ul class="nav nav-tabs">
   {% url federation_view federation.id as federation_url %}
   <li {% if not entity_type %}class="active"{% endif %}>
-      <a href="{{ federation_url }}">{% trans "all" %}</a>
+  <a href="{{ federation_url }}">{% trans "all" %} ({% entities_count federation %})</a>
   </li>
 
   <li {% if entity_type == "idp" %}class="active"{% endif %}>
-    <a href="{{ federation_url }}?entity_type=idp">{% trans "Identity Provider" %}</a>
+  <a href="{{ federation_url }}?entity_type=idp">{% trans "Identity Provider" %}
+     ({% entities_count federation "idp" %})</a>
   </li>
 
   <li {% if entity_type == "sp" %}class="active{% endif %}">
-    <a href="{{ federation_url }}?entity_type=sp">{% trans "Service Provider" %}</a>
+  <a href="{{ federation_url }}?entity_type=sp">{% trans "Service Provider" %}
+    ({% entities_count federation "sp" %})</a>
   </li>
 </ul>
 {% entities_list federation entities page entity_type %}

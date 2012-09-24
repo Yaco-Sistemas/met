@@ -1,17 +1,32 @@
 {% extends "metadataparser/base_metadataparser.html" %}
-{% load i18n %}
+{% load i18n metadataparsertags %}
 
 {% block appendheader %}
 <h2>{% trans "Federations" %}</h2>
 {% endblock %}
 
 {% block content %}
-<ul>
+<table class="table .table-bordered">
+  <thead>
+    <tr>
+      <th>{% trans "Federation Name" %}</th>
+      <th>{% trans "Entities" %}</th>
+      <th>{% trans "IDP Entities" %}</th>
+      <th>{% trans "SP Entities" %}</th>
+    </tr>
+  </thead>
+  <tbody>
   {% for federation in federations %}
-  <li>
-    <a href="{% url federation_view federation.id %}">{{ federation }}</a>
-  </li>
+  <tr>
+    <td>
+      <a href="{% url federation_view federation.id %}">{{ federation }}</a>
+    </td>
+    <td>{% entities_count federation %}</td>
+    <td>{% entities_count federation "idp" %}</td>
+    <td>{% entities_count federation "sp" %}</td>
+  </tr>
   {% endfor %}
-</ul>
+</tbody>
+</table>
 <a href="{% url federation_add %}">{% trans "add" %}</a>
 {% endblock %}

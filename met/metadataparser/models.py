@@ -9,8 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from met.metadataparser.xmlparser import ParseMetadata
 
 
-def update_obj(mobj, obj):
-    for attrb in mobj.all_attrs:
+def update_obj(mobj, obj, attrs=None):
+    for attrb in attrs or mobj.all_attrs:
         if (getattr(mobj, attrb, None) and
             getattr(obj, attrb, None) and
             getattr(mobj, attrb) != getattr(obj, attrb)):
@@ -25,9 +25,6 @@ class Base(models.Model):
                                help_text=_(u'Url to fetch metadata file'))
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
-    ##  En entity es multitidioma
-    logo = models.ImageField(upload_to='federation_logo', blank=True,
-                             null=True, verbose_name=_(u'Federation logo'))
 
     class Meta:
         abstract = True
@@ -60,6 +57,9 @@ class Federation(Base):
 
     name = models.CharField(blank=True, null=True, max_length=100,
                             verbose_name=_(u'Name'))
+    logo = models.ImageField(upload_to='federation_logo', blank=True,
+                             null=True, verbose_name=_(u'Federation logo'))
+    part_of_edugain = models.BooleanField(verbose_name=_(u'Part of eduGAIN'))
 
     @property
     def _metadata(self):
@@ -83,8 +83,7 @@ class Federation(Base):
         update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
-        entities_metadata = self._metadata.get_entities()
-        for metadata_entity in entities_metadata:
+        for metadata_entity in self._metadata.get_entities():
             m_id = metadata_entity.entityid
             m_type = metadata_entity.entity_type
             try:
@@ -96,7 +95,8 @@ class Federation(Base):
                 except Entity.DoesNotExist:
                     entity = self.entity_set.create(entityid=m_id,
                                                     entity_type=m_type)
-            entity.process_metadata(metadata_entity)
+                    entity.process_metadata(metadata_entity)
+                    entity.save()
 
 
 class EntityQuerySet(QuerySet):
@@ -113,7 +113,8 @@ class EntityQuerySet(QuerySet):
                     raise ValueError("Can't find entity metadata")
 
                 if federation.id in cached_federations:
-                    entity.load_metadata(federation=cached_federations[federation.id])
+                    entity.load_metadata(
+                             federation=cached_federations[federation.id])
                 else:
                     entity.load_metadata(federation=federation)
                     cached_federations[federation.id] = federation
@@ -140,11 +141,12 @@ class Entity(Base):
                                    verbose_name=_(u'Entity Type'))
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federation'))
+
     objects = EntityManager()
 
     @property
-    def Organization(self):
-        return self._get_property('Organization')
+    def organization(self):
+        return self._get_property('organization')
 
     @property
     def name(self):
@@ -189,7 +191,20 @@ class Entity(Base):
         if self.entityid != metadata.entityid:
             raise ValueError("EntityID is not the same")
 
-        update_obj(metadata, self)
+        update_obj(metadata, self, ('entityid', 'entity_type',))
+
+
+class EntityLogo(models.Model):
+    logo = models.ImageField(upload_to='entity_logo', blank=True,
+                             null=True, verbose_name=_(u'Entity logo'))
+    alt = models.CharField(max_length=100, blank=True, null=True,
+                           verbose_name=(u'Alternative text'))
+
+    entity = models.ForeignKey(Entity, blank=False,
+                        verbose_name=_('Entity'))
+
+    def __unicode__(self):
+        return self.alt or u"logo %i" % self.id
 
 
 @receiver(pre_save, sender=Federation, dispatch_uid='federation_pre_save')

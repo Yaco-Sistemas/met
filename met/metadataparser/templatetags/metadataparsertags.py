@@ -32,3 +32,11 @@ def entities_list(federation, entities, page, entity_type=None):
             'entity_type': entity_type,
             'append_url': append_url,
             'entities': entities_page}
+
+
+@register.simple_tag()
+def entities_count(federation, entity_type=None):
+    if entity_type:
+        return federation.entity_set.filter(entity_type=entity_type).count()
+    else:
+        return federation.entity_set.count()

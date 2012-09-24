@@ -9,7 +9,12 @@
 <a href="{% url entities_list federation.id %}">{% trans "entities list"%}</a> |
 <a href="{% url entity_edit federation.id entity.id %}">{% trans "edit" %}</a>
 
+{% for logo in entity.entitylogo_set.all %}
+  <img alt={{ logo }} src="{{ MEDIA_URL }}{{ logo.file }}">
+{% endfor %}
+
 <dl class="dl-horizontal">
+
   <dt>{% trans "Name" %}</dt>
   <dd>{{ entity }}</dd>
 
@@ -17,11 +22,22 @@
   <dd>{{ entity.entityid }}</dd>
 
   <dt>{% trans "Entity Type" %}</dt>
-  <dd>{{ entity.entity_type }}</dd>
+  <dd>{% trans  entity.get_entity_type_display %}</dd>
+
+  {% if entity.organization %}
+  <dt>{% trans "Organization" %}</dt>
+  <dd>
+    <ul class="unstyled">
+    {% for organization in entity.organization %}
+    <li><a href="{{ organization.URL }}">{{ organization.displayName }}</a></li>
+    {% endfor %}
+  </ul>
+  </dd>
+  {% endif %}
 
   <dt>{% trans "Federations" %}</dt>
   <dd>
-  <ul>
+  <ul class="unstyled">
     {% for federation in entity.federations.all %}
     <li><a href="{% url federation_view federation.id %}">{{ federation }}</a></li>
     {% endfor %}
