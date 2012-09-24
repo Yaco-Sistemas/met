@@ -4,8 +4,6 @@ from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-
-
 from met.metadataparser.xmlparser import ParseMetadata
 
 
@@ -39,10 +37,9 @@ class Base(models.Model):
         """Only load file and parse it, don't create/update any objects"""
         if not self.file:
             return None
+        self.file.seek(0)
         metadata_raw = self.file.read()
         metadata = ParseMetadata(data=metadata_raw)
-        #if (hasattr(metadata, 'file_id') and
-        #    getattr(metadata, 'file_id') != self.file_id):
         return metadata
 
     def process_metadata(self):
@@ -75,6 +72,12 @@ class Federation(Base):
 
     def process_metadata(self):
         metadata = self.load_file()
+        if (self.file_id and metadata.file_id and
+                metadata.file_id == self.file_id):
+            return
+        else:
+            self.file_id = metadata.file_id
+
         if not metadata:
             return
         if not metadata.is_federation:
@@ -83,6 +86,7 @@ class Federation(Base):
         update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
+        self._metadata.get_entities()
         for metadata_entity in self._metadata.get_entities():
             m_id = metadata_entity.entityid
             m_type = metadata_entity.entity_type

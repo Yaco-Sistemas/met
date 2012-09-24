@@ -42,7 +42,6 @@ ENTITY_ROOT_TAG = addns('EntityDescriptor')
 class ParseMetadata(object):
 
     def __init__(self, filename=None, data=None):
-
         if filename:
             with open(filename, 'r') as file:
                 data = file.read()
