@@ -46,4 +46,4 @@ class EntityForm(forms.ModelForm):
 
 class ServiceSearchForm(forms.Form):
     entityid = forms.CharField(max_length=200, label=_(u"Entity ID"),
-                               help_text=_(u"Please, enter a exact entity id"))
+                               help_text=_(u"Please, enter the exact entity id"))
