@@ -181,6 +181,8 @@ CACHES = {
     }
 }
 
+PAGE_LENGTH = 25
+
 try:
     from local_settings import *
 except:

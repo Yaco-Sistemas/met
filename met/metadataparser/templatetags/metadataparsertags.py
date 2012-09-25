@@ -1,5 +1,6 @@
 from django import template
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.conf import settings
 
 register = template.Library()
 
@@ -14,7 +15,7 @@ def bootstrap_form(form, cancel_link, delete_link=None):
 @register.inclusion_tag('metadataparser/tag_entities_list.html')
 def entities_list(federation, entities, page, entity_type=None):
 
-    paginator = Paginator(entities, 25)
+    paginator = Paginator(entities, getattr(settings, 'PAGE_LENGTH', 25))
 
     try:
         entities_page = paginator.page(page)
