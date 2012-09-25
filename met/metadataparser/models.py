@@ -1,7 +1,13 @@
+from os import path
+import requests
+from urlparse import urlsplit
+
 from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
+from django.core.files.base import ContentFile
+
 from django.utils.translation import ugettext_lazy as _
 
 from met.metadataparser.xmlparser import ParseMetadata
@@ -16,7 +22,7 @@ def update_obj(mobj, obj, attrs=None):
 
 
 class Base(models.Model):
-    file = models.FileField(upload_to='metadata',
+    file = models.FileField(upload_to='metadata', blank=True, null=True,
                             verbose_name=_(u'metadata xml file'))
     file_url = models.URLField(verbose_name='Metadata url',
                                blank=True, null=True,
@@ -42,8 +48,16 @@ class Base(models.Model):
         metadata = ParseMetadata(data=metadata_raw)
         return metadata
 
+    def fetch_metadata_file(self):
+        req = requests.get(self.file_url)
+        if req.ok:
+            req.raise_for_status()
+        parsed_url = urlsplit(self.file_url)
+        filename = path.basename(parsed_url.path)
+        self.file.save(filename, ContentFile(req.content), save=False)
+
     def process_metadata(self):
-        raise NotImplemented
+        raise NotImplemented()
 
 
 class XmlDescriptionError(Exception):
@@ -108,7 +122,6 @@ class EntityQuerySet(QuerySet):
     def iterator(self):
         cached_federations = {}
         for entity in super(EntityQuerySet, self).iterator():
-            #import ipdb; ipdb.set_trace()
             if not entity.file:
                 federations = entity.federations.all()
                 if federations:
@@ -213,6 +226,8 @@ class EntityLogo(models.Model):
 
 @receiver(pre_save, sender=Federation, dispatch_uid='federation_pre_save')
 def process_metadata(sender, instance, **kwargs):
+    if instance.file_url:
+        instance.fetch_metadata_file()
     instance.process_metadata()
 
 

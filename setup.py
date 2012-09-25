@@ -57,6 +57,7 @@ setup(name='met',
           'lxml==2.3.5',
           'PIL',
           'python-memcached',
+          'requests',
       ],
       entry_points="""
       # -*- Entry points: -*-
