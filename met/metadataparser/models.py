@@ -22,11 +22,14 @@ def update_obj(mobj, obj, attrs=None):
 
 
 class Base(models.Model):
-    file = models.FileField(upload_to='metadata', blank=True, null=True,
-                            verbose_name=_(u'metadata xml file'))
     file_url = models.URLField(verbose_name='Metadata url',
                                blank=True, null=True,
                                help_text=_(u'Url to fetch metadata file'))
+    file = models.FileField(upload_to='metadata', blank=True, null=True,
+                            verbose_name=_(u'metadata xml file'),
+                            help_text=_("if url is set metadata url will be"
+                                        "fetched and replace file value"))
+
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
 
@@ -151,8 +154,8 @@ class Entity(Base):
             ('sp', _('Service provider')),
         )
 
-    entityid = models.URLField(blank=False, max_length=200, unique=True,
-                               verbose_name=_(u'EntityID'), db_index=True)
+    entityid = models.CharField(blank=False, max_length=200, unique=True,
+                                verbose_name=_(u'EntityID'), db_index=True)
     entity_type = models.CharField(choices=ENTITY_TYPE, blank=False,
                                    db_index=True, max_length=3,
                                    verbose_name=_(u'Entity Type'))

@@ -97,18 +97,20 @@ def entity_view(request, federation_id, entity_id):
 
 
 def entity_edit(request, federation_id, entity_id=None):
+    federation = get_object_or_404(Federation, id=federation_id)
     if entity_id is None:
         entity = None
     else:
-        entity = get_object_or_404(Entity, id=entity_id)
-    federation = get_object_or_404(Federation, id=federation_id)
+        entity = get_object_or_404(Entity, id=entity_id,
+                                   federations__id=federation.id)
 
     if request.method == 'POST':
         form = EntityForm(request.POST, request.FILES, instance=entity)
         if form.is_valid():
             form.save()
-            form.instance.federation = federation
-            form.instance.save()
+            if not federation in form.instance.federations.all():
+                form.instance.federations.add(federation)
+                form.instance.save()
             if entity:
                 messages.success(request, _('Entity modified succesfully'))
             else:
