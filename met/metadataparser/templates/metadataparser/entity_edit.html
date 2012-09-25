@@ -11,10 +11,8 @@
 
 {% block content %}
 {% if form.instance.id %}
-  {% url entity_delete federation.id form.instance.id as delete_link %}
-  {% url entity_view federation.id form.instance.id as cancel_link %}
-{% else %}
-  {% url entities_list federation.id as cancel_link %}
+  {% url entity_delete form.instance.id as delete_link %}
+  {% url entity_view form.instance.id as cancel_link %}
 {% endif %}
 {% bootstrap_form form cancel_link delete_link %}
 {% endblock %}

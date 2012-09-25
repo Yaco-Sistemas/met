@@ -10,7 +10,10 @@
 {% bootstrap_searchform searchform %}
 
 {% if entity %}
-<dl class="dl-horizontal">
+
+<dl class="dl">
+
+  <a href={% url entity_view entity.id %}>{% trans "Go to full entity view" %}</a>
 
   <dt>{% trans "Name" %}</dt>
   <dd>{{ entity }}</dd>
@@ -31,18 +34,22 @@
   </ul>
   </dd>
   {% endif %}
-
-  <dt>{% trans "Federations" %}</dt>
-  <dd>
-  <ul class="unstyled">
-    {% for federation in entity.federations.all %}
-    <li><a href="{% url federation_view federation.id %}">{{ federation }}</a></li>
-    {% endfor %}
-  </ul>
-  </dd>
 </dl>
+
+
+
+<h3>{% trans "Federations" %}</h3>
+<table class="table table-bordered">
+<thead>
+  <th>{% trans "federation name" %}</th>
+</thead>
+<tbody>
+  {% for federation in entity.federations.all %}
+  <tr>
+    <td>{{ federation }}</td>
+  </tr>
+  {% endfor %}
+</tbody>
 {% endif %}
 
-
 {% endblock %}
-

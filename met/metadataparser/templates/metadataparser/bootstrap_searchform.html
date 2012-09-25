@@ -13,15 +13,15 @@
 {{ hidden }}
 {% endfor %}
 {% for field in form.visible_fields %}
-        <input name="{{ field.name }}"
-              {% if field.value %}value={{ field.value }}{% endif %}/
-              type="text" maxlength="{{ field.max_length }}">
-        <button class="btn" type="submit">{% trans "Search" %}</button>
-        <p class="help-text"> {{ field.help_text }} </p>
-        {% if field.errors %}
-        <span class="help-inline">
-          {% for error in field.errors %}{{ error }}{% endfor %}
-        </span>
-        {% endif %}
+    <input name="{{ field.name }}"
+          {% if field.value %}value={{ field.value }}{% endif %}/
+          type="text" maxlength="{{ field.max_length }}">
+    <button class="btn" type="submit">{% trans "Search" %}</button>
+    <p class="help-text"> {{ field.help_text }} </p>
+    {% if field.errors %}
+    <span class="help-inline">
+      {% for error in field.errors %}{{ error }}{% endfor %}
+    </span>
+    {% endif %}
 {% endfor %}
 </form>

@@ -8,6 +8,11 @@ h2 {
     line-height: 22px;
 }
 
+h3 {
+    font-size: 18px;
+    line-height: 20px;
+}
+
 div.controls ul {
     list-style: none outside none;
     margin-left: 0;

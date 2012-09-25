@@ -79,37 +79,30 @@ def federation_delete(request, federation_id):
     return HttpResponseRedirect('federations_list')
 
 
-def entities_list(request, federation_id):
-    federation = get_object_or_404(Federation, id=federation_id)
-    entities = federation.entity_set.all()
-    return render_to_response('metadataparser/entities_list.html', {
-           'federation': federation,
-           'entities': entities,
-           }, context_instance=RequestContext(request))
-
-
-def entity_view(request, federation_id, entity_id):
+def entity_view(request, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
-    federation = get_object_or_404(Federation, id=federation_id)
     return render_to_response('metadataparser/entity_view.html',
-            {'federation': federation,
-             'entity': entity,
+            {'entity': entity,
             }, context_instance=RequestContext(request))
 
 
-def entity_edit(request, federation_id, entity_id=None):
-    federation = get_object_or_404(Federation, id=federation_id)
-    if entity_id is None:
-        entity = None
-    else:
-        entity = get_object_or_404(Entity, id=entity_id,
-                                   federations__id=federation.id)
+def entity_edit(request, federation_id=None, entity_id=None):
+    entity = None
+    federation = None
+    if federation_id:
+        federation = get_object_or_404(Federation, id=federation_id)
+        if entity_id:
+            entity = get_object_or_404(Entity, id=entity_id,
+                                       federations__id=federation.id)
+    if entity_id and not federation_id:
+        entity = get_object_or_404(Entity, id=entity_id)
 
     if request.method == 'POST':
         form = EntityForm(request.POST, request.FILES, instance=entity)
         if form.is_valid():
             form.save()
-            if not federation in form.instance.federations.all():
+            if (federation and
+               not federation in form.instance.federations.all()):
                 form.instance.federations.add(federation)
                 form.instance.save()
             if entity:
@@ -117,7 +110,7 @@ def entity_edit(request, federation_id, entity_id=None):
             else:
                 messages.success(request, _('Entity created succesfully'))
             entity = form.instance
-            url = reverse('entity_view', args=[federation.id, entity.id])
+            url = reverse('entity_view', args=[entity.id])
             return HttpResponseRedirect(url)
 
         else:

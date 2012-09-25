@@ -71,6 +71,8 @@ class Federation(Base):
 
     name = models.CharField(blank=True, null=True, max_length=100,
                             verbose_name=_(u'Name'))
+    url = models.URLField(verbose_name='Federation url',
+                          blank=True, null=True)
     logo = models.ImageField(upload_to='federation_logo', blank=True,
                              null=True, verbose_name=_(u'Federation logo'))
     part_of_edugain = models.BooleanField(verbose_name=_(u'Part of eduGAIN'))
