@@ -157,10 +157,11 @@ class Entity(Base):
     entityid = models.CharField(blank=False, max_length=200, unique=True,
                                 verbose_name=_(u'EntityID'), db_index=True)
     entity_type = models.CharField(choices=ENTITY_TYPE, blank=False,
-                                   db_index=True, max_length=3,
-                                   verbose_name=_(u'Entity Type'))
+                                   null=False, db_index=True, max_length=3,
+                                   default='sp',
+                                   verbose_name=_(u'Entity Type'),)
     federations = models.ManyToManyField(Federation,
-                                         verbose_name=_(u'Federation'))
+                                         verbose_name=_(u'Federations'))
 
     objects = EntityManager()
 

@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.forms.widgets import CheckboxSelectMultiple
 
 from met.metadataparser.models import Federation, Entity
 
@@ -20,6 +21,13 @@ class FederationForm(forms.ModelForm):
 
 
 class EntityForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EntityForm, self).__init__(*args, **kwargs)
+        federations_choices = self.fields['federations'].widget.choices
+        self.fields['federations'].widget = CheckboxSelectMultiple(
+                                                choices=federations_choices)
+        self.fields['federations'].help_text = ''
 
     def clean(self):
         cleaned_data = super(EntityForm, self).clean()
