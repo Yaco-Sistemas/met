@@ -18,5 +18,7 @@ urlpatterns = patterns('met.metadataparser.views',
     url(r'^entity/(?P<entity_id>\d+)/delete/$', 'entity_delete',
         name='entity_delete'),
 
-    url(r'^search_service/$', 'search_service', name='search_service')
+    url(r'^search_service/$', 'search_service', name='search_service'),
+    url(r'^search_service/(?P<mode>\w+)/$', 'search_service_export',
+        name='search_service_export'),
     )

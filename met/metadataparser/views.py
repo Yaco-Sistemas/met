@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from met.metadataparser.models import Federation, Entity
 from met.metadataparser.forms import (FederationForm, EntityForm,
                                       ServiceSearchForm)
+
+from met.metadataparser.utils import export_csv, export_json
 
 
 def federations_list(request):
@@ -137,8 +139,8 @@ def entity_delete(request, federation_id, entity_id):
 ## Querys
 def search_service(request):
     entity = None
-    if request.method == 'POST':
-        form = ServiceSearchForm(request.POST)
+    if request.method == 'GET' and 'entityid' in request.GET:
+        form = ServiceSearchForm(request.GET)
         if form.is_valid():
             entityid = form.cleaned_data['entityid']
             try:
@@ -150,7 +152,28 @@ def search_service(request):
     else:
             form = ServiceSearchForm()
     return render_to_response('metadataparser/service_search.html',
-
             {'searchform': form,
              'entity': entity,
             }, context_instance=RequestContext(request))
+
+
+def search_service_export(request, mode='json'):
+    entity = None
+    if request.method == 'GET' and 'entityid' in request.GET:
+        form = ServiceSearchForm(request.GET)
+        if form.is_valid():
+            entityid = form.cleaned_data['entityid']
+            try:
+                entity = Entity.objects.get(entityid=entityid)
+            except Entity.DoesNotExist:
+                messages.info(request, _(u"Can't found %(entityid)s service"
+                                         % {'entityid': entityid}))
+
+    if mode == 'csv':
+        return export_csv(entity.federations.all(), unicode(entity),
+                      ('name', 'url'))
+    elif mode == 'json':
+        return export_json(entity.federations.all(), unicode(entity),
+                      ('name', 'url'))
+    else:
+        return HttpResponseBadRequest()

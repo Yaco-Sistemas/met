@@ -8,7 +8,7 @@
 </div>
 {% endfor %}
 
-<form action="." method="post" class="form-search">{% csrf_token %}
+<form action="." method="get" class="form-search">
 {% for hidden in form.hidden_fields %}
 {{ hidden }}
 {% endfor %}
