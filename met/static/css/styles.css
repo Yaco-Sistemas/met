@@ -7,3 +7,8 @@ h2 {
     font-size: 20px;
     line-height: 22px;
 }
+
+div.controls ul {
+    list-style: none outside none;
+    margin-left: 0;
+}

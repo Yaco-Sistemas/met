@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-<a href="{% url entities_list federation.id %}">{% trans "entities list"%}</a> |
 <a href="{% url entity_edit federation.id entity.id %}">{% trans "edit" %}</a>
 
 {% for logo in entity.entitylogo_set.all %}
