@@ -22,4 +22,5 @@ urlpatterns = patterns('met.metadataparser.views',
         include(entity_urlpatterns)),
     url(r'^federation/(?P<federation_id>\d+)/$', 'federation_view',
         name='federation_view'),
+    url(r'^search_service/$', 'search_service', name='search_service')
     )

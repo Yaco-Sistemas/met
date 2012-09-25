@@ -1,0 +1,27 @@
+{% load i18n %}
+
+
+{% for error in form.non_field_errors %}
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+  {{ error }}
+</div>
+{% endfor %}
+
+<form action="." method="post" class="form-search">{% csrf_token %}
+{% for hidden in form.hidden_fields %}
+{{ hidden }}
+{% endfor %}
+{% for field in form.visible_fields %}
+        <input name="{{ field.name }}"
+              {% if field.value %}value={{ field.value }}{% endif %}/
+              type="text" maxlength="{{ field.max_length }}">
+        <button class="btn" type="submit">{% trans "Search" %}</button>
+        <p class="help-text"> {{ field.help_text }} </p>
+        {% if field.errors %}
+        <span class="help-inline">
+          {% for error in field.errors %}{{ error }}{% endfor %}
+        </span>
+        {% endif %}
+{% endfor %}
+</form>

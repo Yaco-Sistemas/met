@@ -15,9 +15,6 @@
 
   <dt>{% trans "Metadata file" %}</dt>
   <dd><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "metadata file" %}</a></dd>
-
-  <dt>{% trans "Entities" %}</dt>
-  <dd><a href="{% url entities_list federation.id %}">{% trans "Entities list" %}</a></dd>
 </dl>
 
 <ul class="nav nav-tabs">
@@ -36,6 +33,6 @@
     ({% entities_count federation "sp" %})</a>
   </li>
 </ul>
-{% entities_list federation entities page entity_type %}
+{% federation_entities_list federation entities page entity_type %}
 
 {% endblock %}

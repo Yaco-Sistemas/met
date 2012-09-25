@@ -1,11 +1,16 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n metadataparsertags %}
 
 
 {% block content %}
 
-<ul class="unstylesd">
-  <li><a href="{% url federations_list %}">Federations list</a></li>
+{% federations_summary %}
+
+<ul>
+  <li>
+    <a href="{% url search_service %}">Search service</a>
+  </li>
 </ul>
+
 
 {% endblock %}

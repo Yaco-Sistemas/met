@@ -12,7 +12,7 @@ class FederationForm(forms.ModelForm):
         file_url = cleaned_data.get("file_url")
         file = cleaned_data.get("file")
         if not (file or file_url):
-            raise forms.ValidationError(_("Please, set a file or url to get "
+            raise forms.ValidationError(_(u"Please, set a file or url to get "
                                        "metadata info."))
         return cleaned_data
 
@@ -35,10 +35,15 @@ class EntityForm(forms.ModelForm):
         file = cleaned_data.get("file")
         federations = cleaned_data.get("federations")
         if not (file or file_url or federations):
-            raise forms.ValidationError(_("Please, set a file, url or "
+            raise forms.ValidationError(_(u"Please, set a file, url or "
                                        "federation to get which has entity "
                                        "definition in his url metadata info."))
         return cleaned_data
 
     class Meta:
         model = Entity
+
+
+class ServiceSearchForm(forms.Form):
+    entityid = forms.CharField(max_length=200, label=_(u"Entity ID"),
+                               help_text=_(u"Please, enter a exact entity id"))

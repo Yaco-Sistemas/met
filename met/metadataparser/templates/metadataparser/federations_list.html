@@ -6,27 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<table class="table .table-bordered">
-  <thead>
-    <tr>
-      <th>{% trans "Federation Name" %}</th>
-      <th>{% trans "Entities" %}</th>
-      <th>{% trans "IDP Entities" %}</th>
-      <th>{% trans "SP Entities" %}</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for federation in federations %}
-  <tr>
-    <td>
-      <a href="{% url federation_view federation.id %}">{{ federation }}</a>
-    </td>
-    <td>{% entities_count federation %}</td>
-    <td>{% entities_count federation "idp" %}</td>
-    <td>{% entities_count federation "sp" %}</td>
-  </tr>
-  {% endfor %}
-</tbody>
-</table>
-<a href="{% url federation_add %}">{% trans "add" %}</a>
+
+{% federations_summary federations %}
+
 {% endblock %}

@@ -7,7 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 from met.metadataparser.models import Federation, Entity
-from met.metadataparser.forms import FederationForm, EntityForm
+from met.metadataparser.forms import (FederationForm, EntityForm,
+                                      ServiceSearchForm)
 
 
 def federations_list(request):
@@ -138,3 +139,25 @@ def entity_delete(request, federation_id, entity_id):
                      % {'entity': unicode(entity)}))
     entity_id.delete()
     return HttpResponseRedirect('entities_list', args=[federation_id])
+
+
+## Querys
+def search_service(request):
+    entity = None
+    if request.method == 'POST':
+        form = ServiceSearchForm(request.POST)
+        if form.is_valid():
+            entityid = form.cleaned_data['entityid']
+            try:
+                entity = Entity.objects.get(entityid=entityid)
+            except Entity.DoesNotExist:
+                messages.info(request, _(u"Can't found %(entityid)s service"
+                                         % {'entityid': entityid}))
+
+    else:
+            form = ServiceSearchForm()
+    return render_to_response('metadataparser/service_search.html',
+
+            {'searchform': form,
+             'entity': entity,
+            }, context_instance=RequestContext(request))

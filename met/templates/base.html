@@ -18,11 +18,12 @@
         <header>
         {% block header %}
         <h1>{% trans "Metadata Explorer Tool" %}</h1>
+        {% block headerlinks %}
+        <a href="{% url index %}">{% trans "Index" %}</a>
+        {% endblock %}
         {% endblock %}
         {% block appendheader %}
         {% endblock %}
-
-
         </header>
       </div>
 
