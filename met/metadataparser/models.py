@@ -237,6 +237,15 @@ def process_metadata(sender, instance, **kwargs):
     instance.process_metadata()
 
 
+@receiver(pre_save, sender=Entity, dispatch_uid='entity_pre_save')
+def process_entity_metadata(sender, instance, **kwargs):
+    if instance.file_url:
+        instance.fetch_metadata_file()
+        instance.process_metadata()
+    elif instance.file:
+        instance.process_metadata()
+
+
 @receiver(post_save, sender=Federation, dispatch_uid='federation_post_save')
 def process_metadata_entities(sender, instance, **kwargs):
     instance.process_metadata_entities()
