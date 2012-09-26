@@ -6,9 +6,12 @@
 
 {% federations_summary %}
 
-<ul>
+<ul class="unstyled">
   <li>
-    <a href="{% url search_service %}">Search service</a>
+    <a href="{% url search_service %}">{% trans "Search service" %}</a>
+  </li>
+  <li>
+    <a href="{% url edugain_services %}">{% trans "EduGain Services" %}</a>
   </li>
 </ul>
 

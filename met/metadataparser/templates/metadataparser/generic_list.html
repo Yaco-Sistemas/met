@@ -1,0 +1,39 @@
+{% extends "metadataparser/base_metadataparser.html" %}
+{% load i18n metadataparsertags %}
+
+{% block appendheader %}
+<h2>{{ title }}</h2>
+{% endblock %}
+
+{% block content %}
+<h3>{% trans "Rows:" %} {{ objects|length }} </h3>
+<table class="table table-bordered">
+<thead>
+  {% for column in headers %}
+    <th>{{ column }}</th>
+  {% endfor %}
+</thead>
+<tbody>
+  {% for object in objects %}
+    <tr>
+    {% with object.values as values %}
+      {% for value in values %}
+      <td>{{ value }}</td>
+      {% endfor %}
+    {% endwith %}
+    </tr>
+  {% endfor %}
+</tbody>
+</table>
+<div class="btn-group dropup">
+  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+      {% trans "Export" %}
+      <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a href="?format=csv">{% trans "csv" %}</a></li>
+    <li><a href="?format=json">{% trans "json" %}</a></li>
+  </ul>
+</div>
+
+{% endblock %}

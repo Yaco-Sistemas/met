@@ -10,7 +10,7 @@ from met.metadataparser.models import Federation, Entity
 from met.metadataparser.forms import (FederationForm, EntityForm,
                                       ServiceSearchForm)
 
-from met.metadataparser.utils import export_csv, export_json
+from met.metadataparser.utils import export_query_set
 
 
 def federations_list(request):
@@ -169,11 +169,44 @@ def search_service_export(request, mode='json'):
                 messages.info(request, _(u"Can't found %(entityid)s service"
                                          % {'entityid': entityid}))
 
-    if mode == 'csv':
-        return export_csv(entity.federations.all(), unicode(entity),
-                      ('name', 'url'))
-    elif mode == 'json':
-        return export_json(entity.federations.all(), unicode(entity),
-                      ('name', 'url'))
+        return export_query_set(mode, entity.federations.all(),
+                                unicode(entity),  ('name', 'url'))
+
+
+def generic_html_table(request, title, objects, fields):
+
+    model = objects.model
+    headers = []
+    for field in fields:
+        model_field = model._meta.get_field(field)
+        headers.append(model_field.verbose_name)
+
+    return render_to_response('metadataparser/generic_list.html',
+                                  {'objects': objects.values(fields),
+                                   'headers': headers,
+                                   'title': _('Edugain services'),
+                                  },
+                                  context_instance=RequestContext(request))
+
+
+def edugain_services(request):
+    format = None
+    if 'format' in request.GET:
+        format = request.GET['format']
+
+    fields = ('entityid', 'entity_type',)
+    entities = Entity.objects.filter(federations__part_of_edugain=True)
+    headers = []
+    for fieldname in fields:
+        field = Entity._meta.get_field(fieldname)
+        headers.append(field.verbose_name)
+    if format:
+        return export_query_set(format, entities, _('edugain-services'),
+                                fields)
     else:
-        return HttpResponseBadRequest()
+        return render_to_response('metadataparser/generic_list.html',
+                                  {'objects': entities.values(*fields),
+                                   'headers': headers,
+                                   'title': _('Edugain services'),
+                                  },
+                                  context_instance=RequestContext(request))

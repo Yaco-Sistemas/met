@@ -21,4 +21,6 @@ urlpatterns = patterns('met.metadataparser.views',
     url(r'^search_service/$', 'search_service', name='search_service'),
     url(r'^search_service/(?P<mode>\w+)/$', 'search_service_export',
         name='search_service_export'),
+
+    url(r'^edugain_services/$', 'edugain_services', name='edugain_services'),
     )
