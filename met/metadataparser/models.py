@@ -3,7 +3,7 @@ import requests
 from urlparse import urlsplit
 
 from django.db import models
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.core.files.base import ContentFile
@@ -14,7 +14,8 @@ from met.metadataparser.xmlparser import ParseMetadata
 
 
 def update_obj(mobj, obj, attrs=None):
-    for attrb in attrs or mobj.all_attrs:
+    for_attrs = attrs or mobj.all_attrs
+    for attrb in attrs or for_attrs:
         if (getattr(mobj, attrb, None) and
             getattr(obj, attrb, None) and
             getattr(mobj, attrb) != getattr(obj, attrb)):
@@ -105,8 +106,7 @@ class Federation(Base):
         update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
-        self._metadata.get_entities()
-        for metadata_entity in self._metadata.get_entities():
+        for metadata_entity in self._metadata.get_entitites_iterator():
             m_id = metadata_entity.entityid
             m_type = metadata_entity.entity_type
             try:
@@ -114,12 +114,12 @@ class Federation(Base):
             except Entity.DoesNotExist:
                 try:
                     entity = Entity.objects.get(entityid=m_id)
-                    entity.federations.add(self)
+                    self.entity_set.add(entity)
                 except Entity.DoesNotExist:
                     entity = self.entity_set.create(entityid=m_id,
                                                     entity_type=m_type)
-                    entity.process_metadata(metadata_entity)
-                    entity.save()
+            entity.process_metadata(metadata_entity)
+            entity.save()
 
 
 class EntityQuerySet(QuerySet):
@@ -180,7 +180,7 @@ class Entity(Base):
         verbose_name_plural = _(u'Entities')
 
     def __unicode__(self):
-        return self.name or self.entityid
+        return self.entityid
 
     @property
     def _metadata(self):
@@ -231,21 +231,17 @@ class EntityLogo(models.Model):
 
 
 @receiver(pre_save, sender=Federation, dispatch_uid='federation_pre_save')
-def process_metadata(sender, instance, **kwargs):
+def federation_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
-    instance.process_metadata()
 
 
 @receiver(pre_save, sender=Entity, dispatch_uid='entity_pre_save')
-def process_entity_metadata(sender, instance, **kwargs):
+def entity_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
-        instance.process_metadata()
-    elif instance.file:
-        instance.process_metadata()
 
 
-@receiver(post_save, sender=Federation, dispatch_uid='federation_post_save')
-def process_metadata_entities(sender, instance, **kwargs):
-    instance.process_metadata_entities()
+#@receiver(post_save, sender=Federation, dispatch_uid='federation_post_save')
+#def process_metadata_entities(sender, instance, **kwargs):
+#    instance.process_metadata_entities()
