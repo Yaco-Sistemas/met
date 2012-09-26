@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.db.models.fields import FieldDoesNotExist
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+
 
 
 from met.metadataparser.models import Federation, Entity
@@ -189,24 +191,37 @@ def generic_html_table(request, title, objects, fields):
                                   context_instance=RequestContext(request))
 
 
-def edugain_services(request):
-    format = None
-    if 'format' in request.GET:
-        format = request.GET['format']
-
-    fields = ('entityid', 'entity_type',)
-    entities = Entity.objects.filter(federations__part_of_edugain=True)
+def generic_list(request, objects, format, fields, title, filename):
+    model = objects.model
     headers = []
     for fieldname in fields:
-        field = Entity._meta.get_field(fieldname)
-        headers.append(field.verbose_name)
+        try:
+            field = model._meta.get_field(fieldname)
+            headers.append(field.verbose_name)
+        except FieldDoesNotExist:
+            if hasattr(objects[0], fieldname):
+                headers.append(fieldname.capitalize())
+
     if format:
-        return export_query_set(format, entities, _('edugain-services'),
-                                fields)
+        return export_query_set(format, objects, filename, fields)
     else:
         return render_to_response('metadataparser/generic_list.html',
-                                  {'objects': entities.values(*fields),
+                                  {'objects': objects.values(*fields),
                                    'headers': headers,
-                                   'title': _('Edugain services'),
+                                   'title': title,
                                   },
                                   context_instance=RequestContext(request))
+
+
+def edugain_services(request):
+    entities = Entity.objects.filter(federations__part_of_edugain=True)
+    return generic_list(request, entities, request.GET.get('format', None),
+                        ('entityid', 'entity_type',),
+                        _(u'Edugain services'), 'edugain-services')
+
+
+def edugain_federations(request):
+    federations = Federation.objects.filter(part_of_edugain=True)
+    return generic_list(request, federations, request.GET.get('format', None),
+                        ('name', 'url',),
+                        _(u'Edugain federations'), 'edugain-federations')

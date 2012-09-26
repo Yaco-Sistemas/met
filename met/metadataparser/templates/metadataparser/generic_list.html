@@ -16,11 +16,9 @@
 <tbody>
   {% for object in objects %}
     <tr>
-    {% with object.values as values %}
-      {% for value in values %}
-      <td>{{ value }}</td>
+      {% for value in object.values %}
+      <td>{{ value|default:'' }}</td>
       {% endfor %}
-    {% endwith %}
     </tr>
   {% endfor %}
 </tbody>
@@ -35,5 +33,4 @@
     <li><a href="?format=json">{% trans "json" %}</a></li>
   </ul>
 </div>
-
 {% endblock %}
