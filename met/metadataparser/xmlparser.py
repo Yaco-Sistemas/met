@@ -134,11 +134,9 @@ class MetadataParser(object):
         elements = self.etree.xpath(expression, namespaces=NAMESPACES)
         return [element.tag.split("}")[1] for element in elements]
 
-
     def entities_by_type(self, entity_type):
         return self.etree.xpath("//md:EntityDescriptor[//md:%s]/@entityID"
                                 % entity_type, namespaces=NAMESPACES)
-
 
     def count_entities_by_type(self, entity_type):
         return self.etree.xpath("count(//md:EntityDescriptor[//md:%s])" %s
