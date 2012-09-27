@@ -1,4 +1,3 @@
-from datetime import datetime
 from lxml import etree
 
 
@@ -39,7 +38,7 @@ FEDERATION_ROOT_TAG = addns('EntitiesDescriptor')
 ENTITY_ROOT_TAG = addns('EntityDescriptor')
 
 
-class ParseMetadata(object):
+class MetadataParser(object):
 
     def __init__(self, filename=None, data=None):
         if filename:
@@ -59,65 +58,46 @@ class ParseMetadata(object):
         self.is_federation = (self.etree.tag == FEDERATION_ROOT_TAG)
         self.is_entity = not self.is_federation
 
-    def get_federation(self):
-        return ParseFederationMetadata(self.etree)
+    def get_federation(self, attrs=None):
+        assert self.is_federation
+        federation_attrs = attrs or ('ID', 'Name',)
+        federation = {}
 
-    def find_entity(self, entityid):
-        print "%s[@entityID='%s']" % (
-                                    addns('EntityDescriptor'), entityid)
-        return ParseEntityMetadata(self.etree.find("%s[@entityID='%s']" % (
-                                    addns('EntityDescriptor'), entityid)))
+        for attr in federation_attrs:
+            federation[attr] = self.etree.get(attr, None)
 
-    def get_entity(self):
-        return ParseEntityMetadata(self.etree)
+        return federation
 
+    def get_entity(self, entityid):
+        entity_xpath = self.etree.xpath("md:EntityDescriptor[@entityID='%s']"
+                                         % entityid, namespaces=NAMESPACES)
+        if len(entity_xpath):
+            entity = entity_xpath[0]
+        else:
+            raise ValueError("Entity not found")
+        entity_attrs = ('entityID', 'Name', 'ID')
+        entity = {}
+        for attr in entity_attrs:
+            entity[attr] = entity.get(attr, None)
 
-class ParseFederationMetadata(object):
-
-    all_attrs = ('valid_until', 'name', 'cache_duration', )
-
-    def __init__(self, etree):
-        self.etree = etree
-        self.valid_until = self.etree.get('validUntil', None)
-        self.name = self.etree.get('Name', None)
-        self.cache_duration = self.etree.get('cacheDuration', None)
-
-    def find_entity(self, entityid):
-        return ParseEntityMetadata(self.etree.find("%s[@entityID='%s']" % (
-                                    addns('EntityDescriptor'), entityid)))
+        displayName = self.entity_display_name(entity['entityID'])
+        if displayName:
+            entity['displayName'] = displayName
+        Organization = self.entity_organization(entity['entityID'])
+        if Organization:
+            entity['Organization'] = Organization
 
     def get_entities(self):
-        return [ParseEntityMetadata(entity_etree)
-                for entity_etree in self.etree.findall(ENTITY_ROOT_TAG)]
-
-
-class ParseEntityMetadata(object):
-
-    all_attrs = ('entityid', 'valid_until', 'organization', 'contacts',
-                 'certificates', 'endpoints', 'display_name',
-                 'geolocationhint', 'logos',)
-
-    def __init__(self, etree):
-        self.etree = etree
+        # Return entityid list
+        return self.etree.xpath("//@entityID")
 
     @property
-    def entityid(self):
-        if 'entityID' in self.etree.attrib:
-            return self.etree.attrib['entityID']
-
-    @property
-    def valid_until(self):
-        if 'validUntil' in self.etree.attrib:
-            value = self.etree.attrib['validUntil']
-            try:
-                return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
-            except ValueError:  # Bad datetime format
-                pass
-
-    @property
-    def organization(self):
+    def entity_organization(self, entityid):
+        orgs = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                "/md:Organization/" % entityid,
+                                namespaces=NAMESPACES)
         languages = {}
-        for org_node in self.etree.findall(addns('Organization')):
+        for org_node in orgs:
             for attr in ('name', 'displayName', 'URL'):
                 node_name = 'Organization' + attr[0].upper() + attr[1:]
                 for node in org_node.findall(addns(node_name)):
@@ -135,100 +115,29 @@ class ParseEntityMetadata(object):
         return result
 
     @property
-    def contacts(self):
-        result = []
-        for contact_node in self.etree.findall(addns('ContactPerson')):
-            contact = {}
-
-            if 'contactType' in contact_node.attrib:
-                contact['type'] = contact_node.attrib['contactType']
-
-            for child in contact_node:
-                contact[delns(child.tag)] = child.text
-
-            result.append(contact)
-        return result
-
-    @property
-    def certificates(self):
-        result = []
-
-        def collect_certificates_for_role(role):
-            key_descr_path = [addns(role), addns('KeyDescriptor')]
-
-            for key_descriptor in self.etree.findall('/'.join(key_descr_path)):
-                cert_path = [addns('KeyInfo', XMLDSIG_NAMESPACE),
-                             addns('X509Data', XMLDSIG_NAMESPACE),
-                             addns('X509Certificate', XMLDSIG_NAMESPACE)]
-                for cert in key_descriptor.findall('/'.join(cert_path)):
-                    if 'use' in key_descriptor.attrib:
-                        result.append({'use': key_descriptor.attrib['use'],
-                                   'text': cert.text})
-                    else:
-                        result.append({'use': 'signing and encryption',
-                                       'text': cert.text})
-
-        collect_certificates_for_role('IDPSSODescriptor')
-        collect_certificates_for_role('SPSSODescriptor')
-
-        return result
-
-    @property
-    def endpoints(self):
-        result = []
-
-        def populate_endpoint(node, endpoint):
-            for attr in ('Binding', 'Location'):
-                if attr in node.attrib:
-                    endpoint[attr] = node.attrib[attr]
-
-        for role, endpoints in {
-            'IDPSSODescriptor': [
-                'Artifact Resolution Service',
-                'Assertion ID Request Service',
-                'Manage Name ID Service',
-                'Name ID Mapping Service',
-                'Single Logout Service',
-                'Single Sign On Service',
-                ],
-            'SPSSODescriptor': [
-                'Artifact Resolution Service',
-                'Assertion Consumer Service',
-                'Manage Name ID Service',
-                'Single Logout Service',
-                'Request Initiator',
-                'Discovery Response',
-                ],
-            }.items():
-
-            for endpoint in endpoints:
-                endpoint_id = endpoint.replace(' ', '')  # remove spaces
-                path = [addns(role), addns(endpoint_id)]
-                for endpoint_node in self.etree.findall('/'.join(path)):
-                    endpoint = {'Type': endpoint}
-                    populate_endpoint(endpoint_node, endpoint)
-                    result.append(endpoint)
-
-        return result
-
-    @property
-    def entity_type(self):
-        sp = self.etree.findall(addns('SPSSODescriptor'))
-        idp = self.etree.findall(addns('IDPSSODescriptor'))
-        if len(idp):
-            return 'idp'
-        elif len(sp):
+    def entity_type(self, entityid):
+        is_sp = self.etree.xpath("count(//md:EntityDescriptor[@entityID='%s']"
+                                 "/md:SPSSODescriptor) = 1" % entityid,
+                                 namespaces=NAMESPACES)
+        if is_sp:
             return 'sp'
-        else:
-            raise ValueError("Can't select SP or IDP Entity Type")
+        is_idp = self.etree.xpath("count(//md:EntityDescriptor[@entityID='%s']"
+                                  "/md:IDPSSODescriptor) = 1" % entityid,
+                                  namespaces=NAMESPACES)
+        if is_idp:
+            return 'idp'
+
+        raise ValueError("Can't select SP or IDP Entity Type")
 
     @property
-    def display_name(self):
+    def entity_display_name(self, entityid):
         languages = {}
-        path = [addns('SPSSODescriptor'), addns('Extensions'),
-                addns('UIInfo', MDUI_NAMESPACE),
-                addns('DisplayName', MDUI_NAMESPACE)]
-        for dn_node in self.etree.findall('/'.join(path)):
+        names = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                 "/mdui:UIInfo"
+                                 "/mdui:DisplayName" % entityid,
+                                 namespaces=NAMESPACES)
+
+        for dn_node in names:
             lang = getlang(dn_node)
             if lang is None:
                 continue  # the lang attribute is required
@@ -238,24 +147,14 @@ class ParseEntityMetadata(object):
         return languages
 
     @property
-    def geolocationhint(self):
-        path = [addns('SPSSODescriptor'), addns('Extensions'),
-                addns('UIInfo', MDUI_NAMESPACE),
-                addns('GeolocationHint', MDUI_NAMESPACE)]
-        result = self.etree.find('/'.join(path))
-        if result is not None:
-            latitude, longitude = result.text.replace('geo:', '').split(',')
-            return {'latitude': latitude, 'longitude': longitude}
-        else:
-            return None
-
-    @property
-    def logos(self):
+    def entity_logos(self, entityid):
         languages = {}
-        path = [addns('SPSSODescriptor'), addns('Extensions'),
-                addns('UIInfo', MDUI_NAMESPACE),
-                addns('Logo', MDUI_NAMESPACE)]
-        for logo_node in self.etree.findall('/'.join(path)):
+        logos = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                 "/mdui:UIInfo"
+                                 "/mdui:Logo" % entityid,
+                                 namespaces=NAMESPACES)
+
+        for logo_node in logos:
             lang = getlang(logo_node)
             if lang is None:
                 continue  # the lang attribute is required
