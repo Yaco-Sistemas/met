@@ -18,6 +18,13 @@ XML_NAMESPACE = NAMESPACES['xml']
 XMLDSIG_NAMESPACE = NAMESPACES['ds']
 MDUI_NAMESPACE = NAMESPACES['mdui']
 
+DESCRIPTOR_TYPES = ('RoleDescriptor', 'IDPSSODescriptor',
+                    'SPSSODescriptor', 'AuthnAuthorityDescriptor',
+                    'AttributeAuthorityDescriptor', 'PDPDescriptor',
+                    'AffiliationDescriptor',)
+
+DESCRIPTOR_TYPES_UTIL = ("md:%s" % item for item in DESCRIPTOR_TYPES)
+
 
 def addns(node_name, namespace=SAML_METADATA_NAMESPACE):
     '''Return a node name qualified with the XML namespace'''
@@ -76,18 +83,18 @@ class MetadataParser(object):
             entity_etree = entity_xpath[0]
         else:
             raise ValueError("Entity not found")
-        entity_attrs = ('entityID', 'Name', 'ID')
+        entity_attrs = (('entityid', 'entityID'), ('file_id', 'ID'))
         entity = {}
-        for attr in entity_attrs:
-            entity[attr] = entity_etree.get(attr, None)
+        for (dict_attr, etree_attr) in entity_attrs:
+            entity[dict_attr] = entity_etree.get(etree_attr, None)
 
-        entity_type = self.entity_type(entity['entityID'])
-        if entity_type:
-            entity['entity_type'] = entity_type
-        displayName = self.entity_displayname(entity['entityID'])
+        entity_types = self.entity_types(entity['entityid'])
+        if entity_types:
+            entity['entity_types'] = entity_types
+        displayName = self.entity_displayname(entity['entityid'])
         if displayName:
             entity['displayname'] = displayName
-        Organization = self.entity_organization(entity['entityID'])
+        Organization = self.entity_organization(entity['entityid'])
         if Organization:
             entity['organization'] = Organization
 
@@ -119,19 +126,23 @@ class MetadataParser(object):
             result.append(data)
         return result
 
-    def entity_type(self, entityid):
-        is_sp = self.etree.xpath("count(//md:EntityDescriptor[@entityID='%s']"
-                                 "/md:SPSSODescriptor) = 1" % entityid,
-                                 namespaces=NAMESPACES)
-        if is_sp:
-            return 'sp'
-        is_idp = self.etree.xpath("count(//md:EntityDescriptor[@entityID='%s']"
-                                  "/md:IDPSSODescriptor) = 1" % entityid,
-                                  namespaces=NAMESPACES)
-        if is_idp:
-            return 'idp'
+    def entity_types(self, entityid):
+        entity_base = "//md:EntityDescriptor[@entityID='%s']" % entityid
 
-        raise ValueError("Can't select SP or IDP Entity Type")
+        expression = ("|".join(["%s/%s" % (entity_base, desc)
+                                         for desc in DESCRIPTOR_TYPES_UTIL]))
+        elements = self.etree.xpath(expression, namespaces=NAMESPACES)
+        return [element.tag.split("}")[1] for element in elements]
+
+
+    def entities_by_type(self, entity_type):
+        return self.etree.xpath("//md:EntityDescriptor[//md:%s]/@entityID"
+                                % entity_type, namespaces=NAMESPACES)
+
+
+    def count_entities_by_type(self, entity_type):
+        return self.etree.xpath("count(//md:EntityDescriptor[//md:%s])" %s
+                               entity_type, namespaces=NAMESPACES)
 
     def entity_displayname(self, entityid):
         languages = {}

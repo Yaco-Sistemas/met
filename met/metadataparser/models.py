@@ -109,8 +109,8 @@ class Federation(Base):
 
     def process_metadata_entities(self):
         for entityid in self._metadata.get_entities():
+            print entityid
             m_id = entityid
-
             try:
                 entity = self.get_entity(entityid=m_id)
             except Entity.DoesNotExist:
@@ -118,63 +118,15 @@ class Federation(Base):
                     entity = Entity.objects.get(entityid=m_id)
                     self.entity_set.add(entity)
                 except Entity.DoesNotExist:
-                    m_type = self._metadata.entity_type(m_id)
-                    entity = self.entity_set.create(entityid=m_id,
-                                                    entity_type=m_type)
-            entity.process_metadata(self._metadata)
-            entity.save()
-
-
-class EntityQuerySet(QuerySet):
-
-    def iterator(self):
-        cached_federations = {}
-        for entity in super(EntityQuerySet, self).iterator():
-            if not entity.file:
-                federations = entity.federations.all()
-                if federations:
-                    federation = federations[0]
-                else:
-                    raise ValueError("Can't find entity metadata")
-
-                if federation.id in cached_federations:
-                    cached_federation = cached_federations[federation.id]
-                    entity_data = cached_federation.get_entity(entity.entityid)
-                    entity.load_metadata(entity_data=entity_data)
-                else:
-                    cached_federations[federation.id] = federation
-                    cached_federation = cached_federations[federation.id]
-
-                entity_data = cached_federation.get_entity(entity.entityid)
-                entity.load_metadata(entity_data=entity_data)
-
-            yield entity
-
-
-class EntityManager(models.Manager):
-    pass
-
-#    def get_query_set(self):
-#        return EntityQuerySet(self.model, using=self._db)
+                    entity = self.entity_set.create(entityid=m_id)
 
 
 class Entity(Base):
 
-    ENTITY_TYPE = (
-            ('idp', _('Identity provider')),
-            ('sp', _('Service provider')),
-        )
-
     entityid = models.CharField(blank=False, max_length=200, unique=True,
                                 verbose_name=_(u'EntityID'), db_index=True)
-    entity_type = models.CharField(choices=ENTITY_TYPE, blank=False,
-                                   null=False, db_index=True, max_length=3,
-                                   default='sp',
-                                   verbose_name=_(u'Entity Type'),)
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federations'))
-
-    objects = EntityManager()
 
     @property
     def organization(self):
@@ -183,6 +135,10 @@ class Entity(Base):
     @property
     def name(self):
         return self._get_property('displayname')
+
+    @property
+    def types(self):
+        return self._get_property('types')
 
     class Meta:
         verbose_name = _(u'Entity')
@@ -222,8 +178,6 @@ class Entity(Base):
             raise ValueError("EntityID is not the same")
 
         self._entity_cached = entity_data
-
-        update_obj(self._metadata_data, self, ('entity_type',))
 
 
 class EntityLogo(models.Model):
