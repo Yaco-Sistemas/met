@@ -65,3 +65,14 @@ def entities_count(federation, entity_type=None):
         return federation.entity_set.filter(entity_type=entity_type).count()
     else:
         return federation.entity_set.count()
+
+
+@register.simple_tag(takes_context=True)
+def l10n_property(context, prop):
+    if isinstance(prop, dict):
+        lang = context.get('LANGUAGE_CODE', None)
+        if lang and lang in prop:
+            return prop.get(lang)
+        else:
+            return prop[prop.keys()[0]]
+    return prop

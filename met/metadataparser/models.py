@@ -10,7 +10,7 @@ from django.core.files.base import ContentFile
 
 from django.utils.translation import ugettext_lazy as _
 
-from met.metadataparser.xmlparser import ParseMetadata
+from met.metadataparser.xmlparser import MetadataParser
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -47,9 +47,7 @@ class Base(models.Model):
         """Only load file and parse it, don't create/update any objects"""
         if not self.file:
             return None
-        self.file.seek(0)
-        metadata_raw = self.file.read()
-        metadata = ParseMetadata(data=metadata_raw)
+        metadata = MetadataParser(filename=self.file.path)
         return metadata
 
     def fetch_metadata_file(self):
@@ -80,15 +78,19 @@ class Federation(Base):
 
     @property
     def _metadata(self):
+
         if not hasattr(self, '_metadata_cache'):
-            self._metadata_cache = self.load_file().get_federation()
+            self._metadata_cache = self.load_file()
         return self._metadata_cache
 
     def __unicode__(self):
         return self.name
 
     def get_entity_metadata(self, entityid):
-        return self._metadata.find_entity(entityid)
+        return self._metadata.get_entity(entityid)
+
+    def get_entity(self, entityid):
+        return self.entity_set.get(entityid=entityid)
 
     def process_metadata(self):
         metadata = self.load_file()
@@ -106,19 +108,20 @@ class Federation(Base):
         update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
-        for metadata_entity in self._metadata.get_entitites_iterator():
-            m_id = metadata_entity.entityid
-            m_type = metadata_entity.entity_type
+        for entityid in self._metadata.get_entities():
+            m_id = entityid
+
             try:
-                entity = self.entity_set.get(entityid=m_id)
+                entity = self.get_entity(entityid=m_id)
             except Entity.DoesNotExist:
                 try:
                     entity = Entity.objects.get(entityid=m_id)
                     self.entity_set.add(entity)
                 except Entity.DoesNotExist:
+                    m_type = self._metadata.entity_type(m_id)
                     entity = self.entity_set.create(entityid=m_id,
                                                     entity_type=m_type)
-            entity.process_metadata(metadata_entity)
+            entity.process_metadata(self._metadata)
             entity.save()
 
 
@@ -135,18 +138,24 @@ class EntityQuerySet(QuerySet):
                     raise ValueError("Can't find entity metadata")
 
                 if federation.id in cached_federations:
-                    entity.load_metadata(
-                             federation=cached_federations[federation.id])
+                    cached_federation = cached_federations[federation.id]
+                    entity_data = cached_federation.get_entity(entity.entityid)
+                    entity.load_metadata(entity_data=entity_data)
                 else:
-                    entity.load_metadata(federation=federation)
                     cached_federations[federation.id] = federation
+                    cached_federation = cached_federations[federation.id]
+
+                entity_data = cached_federation.get_entity(entity.entityid)
+                entity.load_metadata(entity_data=entity_data)
 
             yield entity
 
 
 class EntityManager(models.Manager):
-    def get_query_set(self):
-        return EntityQuerySet(self.model, using=self._db)
+    pass
+
+#    def get_query_set(self):
+#        return EntityQuerySet(self.model, using=self._db)
 
 
 class Entity(Base):
@@ -173,7 +182,7 @@ class Entity(Base):
 
     @property
     def name(self):
-        return self._get_property('displayName')
+        return self._get_property('displayname')
 
     class Meta:
         verbose_name = _(u'Entity')
@@ -182,39 +191,39 @@ class Entity(Base):
     def __unicode__(self):
         return self.entityid
 
-    @property
-    def _metadata(self):
-        if not hasattr(self, '_metadata_cache'):
-            self.load_metadata()
-        return self._metadata_cache
-
-    def load_metadata(self, federation=None):
-        if not hasattr(self, '_metadata_cache'):
+    def load_metadata(self, federation=None, entity_data=None):
+        if not hasattr(self, '_entity_cached'):
             if self.file:
-                self._metadata_cache = self.load_file()
+                self._entity_cached = self.load_file().get_entity(self.entityid)
+            elif federation:
+                self._entity_cached = federation.get_entity_metadata(self.entityid)
+            elif entity_data:
+                self._entity_cached = entity_data
             else:
-                if not federation:
-                    federations = self.federations.all()
-                    if federations:
-                        federation = federations[0]
-                    else:
-                        raise ValueError("Can't find entity metadata")
-                self._metadata_cache = federation.get_entity_metadata(
-                                                                self.entityid)
+                federations = self.federations.all()
+                if federations:
+                    federation = federations[0]
+                else:
+                    raise ValueError("Can't find entity metadata")
+                self._entity_cached = federation.get_entity_metadata(self.entityid)
 
     def _get_property(self, prop):
         self.load_metadata()
-        return getattr(self._metadata, prop, None)
+        if hasattr(self, '_entity_cached'):
+            return self._entity_cached.get(prop, None)
+        else:
+            raise ValueError("Not metadata loaded")
 
-    def process_metadata(self, metadata=None):
-        if not metadata:
+    def process_metadata(self, entity_data=None):
+        if not entity_data:
             self.load_metadata()
-            metadata = self._metadata.get_entity()
 
-        if self.entityid != metadata.entityid:
+        if self.entityid != entity_data.get('entityid'):
             raise ValueError("EntityID is not the same")
 
-        update_obj(metadata, self, ('entityid', 'entity_type',))
+        self._entity_cached = entity_data
+
+        update_obj(self._metadata_data, self, ('entity_type',))
 
 
 class EntityLogo(models.Model):

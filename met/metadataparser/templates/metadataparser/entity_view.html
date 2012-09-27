@@ -1,5 +1,5 @@
 {% extends "metadataparser/base_metadataparser.html" %}
-{% load i18n %}
+{% load i18n metadataparsertags %}
 
 {% block appendheader %}
 <h2>{% trans "Entity" %} {{ entity }}</h2>
@@ -14,8 +14,10 @@
 
 <dl class="dl-horizontal">
 
+  {% if entity.name %}
   <dt>{% trans "Name" %}</dt>
-  <dd>{{ entity }}</dd>
+  <dd>{% l10n_property entity.name %}</dd>
+  {% endif %}
 
   <dt>{% trans "EntityID" %}</dt>
   <dd>{{ entity.entityid }}</dd>

@@ -42,18 +42,19 @@ class MetadataParser(object):
 
     def __init__(self, filename=None, data=None):
         if filename:
-            with open(filename, 'r') as file:
-                data = file.read()
-                if not data:
-                    raise ValueError('no metadata content')
-        elif not data:
-            raise ValueError('not data or filename found')
+            try:
+                etree_parser = etree.parse(filename)
+            except etree.XMLSyntaxError:
+                raise ValueError('invalid metadata XML')
+        elif data:
+            try:
+                etree_parser = etree.XML(data)
+            except etree.XMLSyntaxError:
+                raise ValueError('invalid metadata XML')
+        else:
+            raise ValueError('filename or data are required')
 
-        try:
-            self.etree = etree.XML(data)
-        except etree.XMLSyntaxError:
-            raise ValueError('invalid metadata XML')
-
+        self.etree = etree_parser.getroot()
         self.file_id = self.etree.get('ID', None)
         self.is_federation = (self.etree.tag == FEDERATION_ROOT_TAG)
         self.is_entity = not self.is_federation
@@ -72,29 +73,33 @@ class MetadataParser(object):
         entity_xpath = self.etree.xpath("md:EntityDescriptor[@entityID='%s']"
                                          % entityid, namespaces=NAMESPACES)
         if len(entity_xpath):
-            entity = entity_xpath[0]
+            entity_etree = entity_xpath[0]
         else:
             raise ValueError("Entity not found")
         entity_attrs = ('entityID', 'Name', 'ID')
         entity = {}
         for attr in entity_attrs:
-            entity[attr] = entity.get(attr, None)
+            entity[attr] = entity_etree.get(attr, None)
 
-        displayName = self.entity_display_name(entity['entityID'])
+        entity_type = self.entity_type(entity['entityID'])
+        if entity_type:
+            entity['entity_type'] = entity_type
+        displayName = self.entity_displayname(entity['entityID'])
         if displayName:
-            entity['displayName'] = displayName
+            entity['displayname'] = displayName
         Organization = self.entity_organization(entity['entityID'])
         if Organization:
-            entity['Organization'] = Organization
+            entity['organization'] = Organization
+
+        return entity
 
     def get_entities(self):
         # Return entityid list
         return self.etree.xpath("//@entityID")
 
-    @property
     def entity_organization(self, entityid):
         orgs = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
-                                "/md:Organization/" % entityid,
+                                "/md:Organization" % entityid,
                                 namespaces=NAMESPACES)
         languages = {}
         for org_node in orgs:
@@ -114,7 +119,6 @@ class MetadataParser(object):
             result.append(data)
         return result
 
-    @property
     def entity_type(self, entityid):
         is_sp = self.etree.xpath("count(//md:EntityDescriptor[@entityID='%s']"
                                  "/md:SPSSODescriptor) = 1" % entityid,
@@ -129,11 +133,10 @@ class MetadataParser(object):
 
         raise ValueError("Can't select SP or IDP Entity Type")
 
-    @property
-    def entity_display_name(self, entityid):
+    def entity_displayname(self, entityid):
         languages = {}
         names = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
-                                 "/mdui:UIInfo"
+                                 " //mdui:UIInfo"
                                  "/mdui:DisplayName" % entityid,
                                  namespaces=NAMESPACES)
 
@@ -146,11 +149,10 @@ class MetadataParser(object):
 
         return languages
 
-    @property
     def entity_logos(self, entityid):
         languages = {}
         logos = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
-                                 "/mdui:UIInfo"
+                                 " //mdui:UIInfo"
                                  "/mdui:Logo" % entityid,
                                  namespaces=NAMESPACES)
 
