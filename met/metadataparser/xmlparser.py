@@ -23,6 +23,10 @@ DESCRIPTOR_TYPES = ('RoleDescriptor', 'IDPSSODescriptor',
                     'AttributeAuthorityDescriptor', 'PDPDescriptor',
                     'AffiliationDescriptor',)
 
+#DESCRIPTOR_TYPES = ('IDPSSODescriptor',
+#                    'SPSSODescriptor', 'AuthnAuthorityDescriptor',
+#                    'AttributeAuthorityDescriptor', 'PDPDescriptor',)
+
 DESCRIPTOR_TYPES_UTIL = ("md:%s" % item for item in DESCRIPTOR_TYPES)
 
 
@@ -135,12 +139,16 @@ class MetadataParser(object):
         return [element.tag.split("}")[1] for element in elements]
 
     def entities_by_type(self, entity_type):
-        return self.etree.xpath("//md:EntityDescriptor[//md:%s]/@entityID"
+        return self.etree.xpath("//md:EntityDescriptor[md:%s]/@entityID"
                                 % entity_type, namespaces=NAMESPACES)
 
     def count_entities_by_type(self, entity_type):
-        return self.etree.xpath("count(//md:EntityDescriptor[//md:%s])" %s
-                               entity_type, namespaces=NAMESPACES)
+        return int(self.etree.xpath("count(//md:EntityDescriptor[md:%s])" %
+                               entity_type, namespaces=NAMESPACES))
+
+    def count_entities(self):
+        return int(self.etree.xpath("count(//md:EntityDescriptor)",
+                                namespaces=NAMESPACES))
 
     def entity_displayname(self, entityid):
         languages = {}

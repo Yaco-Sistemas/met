@@ -109,7 +109,6 @@ class Federation(Base):
 
     def process_metadata_entities(self):
         for entityid in self._metadata.get_entities():
-            print entityid
             m_id = entityid
             try:
                 entity = self.get_entity(entityid=m_id)

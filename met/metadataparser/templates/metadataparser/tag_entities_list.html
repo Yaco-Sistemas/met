@@ -5,6 +5,10 @@
   <li>
     <a href="{% url entity_view entity.id %}">{{ entity }}</a>
   </li>
+  {% empty %}
+  <li>
+   {% trans "There isn't entities with this filter" %}
+  </li>
   {% endfor %}
 </ul>
 <div class="pagination">
@@ -13,9 +17,11 @@
       <a href="?page={{ entities.previous_page_number }}{{ append_url }}">previous</a>
     {% endif %}
 
+    {% if entities.paginator.num_pages != entities.number %}
     <span class="current">
       Page {{ entities.number }} of {{ entities.paginator.num_pages }}.
     </span>
+    {% endif %}
 
     {% if entities.has_next %}
       <a href="?page={{ entities.next_page_number }}{{ append_url }}">next</a>

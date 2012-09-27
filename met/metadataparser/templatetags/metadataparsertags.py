@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 
 from met.metadataparser.models import Federation
+from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
 register = template.Library()
 
@@ -31,7 +32,7 @@ def federation_entities_list(federation, entities, page, entity_type=None):
     except EmptyPage:
         entities_page = paginator.page(paginator.num_pages)
 
-    if entity_type:
+    if entity_type and entity_type != 'All':
         append_url = '&entity_type=%s' % entity_type
     else:
         append_url = ''
@@ -56,15 +57,16 @@ def federations_summary(federations=None, page=1):
     except EmptyPage:
         federations_page = paginator.page(paginator.num_pages)
 
-    return {'federations': federations_page}
+    return {'federations': federations_page,
+            'entity_types': DESCRIPTOR_TYPES}
 
 
 @register.simple_tag()
 def entities_count(federation, entity_type=None):
-    if entity_type:
-        return federation.entity_set.filter(entity_type=entity_type).count()
+    if entity_type and entity_type != 'All':
+        return federation._metadata.count_entities_by_type(entity_type)
     else:
-        return federation.entity_set.count()
+        return federation._metadata.count_entities()
 
 
 @register.simple_tag(takes_context=True)

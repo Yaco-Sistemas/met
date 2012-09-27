@@ -11,6 +11,7 @@ from met.metadataparser.forms import (FederationForm, EntityForm,
                                       ServiceSearchForm)
 
 from met.metadataparser.utils import export_query_set
+from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
 
 def federations_list(request):
@@ -26,7 +27,8 @@ def federation_view(request, federation_id):
     entity_type = None
     if (request.GET and 'entity_type' in request.GET):
         entity_type = request.GET['entity_type']
-        entities = federation.entity_set.filter(entity_type=entity_type)
+        entities_id = federation._metadata.entities_by_type(entity_type)
+        entities = federation.entity_set.filter(entityid__in=entities_id)
     else:
         entities = federation.entity_set.all()
 
@@ -34,9 +36,12 @@ def federation_view(request, federation_id):
     if request.GET and 'page' in request.GET:
         page = request.GET['page']
 
+    entity_types = ('All', ) + DESCRIPTOR_TYPES
+
     return render_to_response('metadataparser/federation_view.html',
             {'federation': federation,
-             'entity_type': entity_type,
+             'entity_type': entity_type or 'All',
+             'entity_types': entity_types,
              'entities': entities,
              'page': page or 1,
             }, context_instance=RequestContext(request))
