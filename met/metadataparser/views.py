@@ -160,7 +160,6 @@ def search_service(request):
 
     else:
             form = ServiceSearchForm()
-    print entity.types
     return render_to_response('metadataparser/service_search.html',
             {'searchform': form,
              'entity': entity,
