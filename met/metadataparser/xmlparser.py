@@ -27,7 +27,7 @@ DESCRIPTOR_TYPES = ('RoleDescriptor', 'IDPSSODescriptor',
 #                    'SPSSODescriptor', 'AuthnAuthorityDescriptor',
 #                    'AttributeAuthorityDescriptor', 'PDPDescriptor',)
 
-DESCRIPTOR_TYPES_UTIL = ("md:%s" % item for item in DESCRIPTOR_TYPES)
+DESCRIPTOR_TYPES_UTIL = ["md:%s" % item for item in DESCRIPTOR_TYPES]
 
 
 def addns(node_name, namespace=SAML_METADATA_NAMESPACE):
@@ -135,8 +135,10 @@ class MetadataParser(object):
 
         expression = ("|".join(["%s/%s" % (entity_base, desc)
                                          for desc in DESCRIPTOR_TYPES_UTIL]))
+
         elements = self.etree.xpath(expression, namespaces=NAMESPACES)
-        return [element.tag.split("}")[1] for element in elements]
+        types = [element.tag.split("}")[1] for element in elements]
+        return types
 
     def entities_by_type(self, entity_type):
         return self.etree.xpath("//md:EntityDescriptor[md:%s]/@entityID"

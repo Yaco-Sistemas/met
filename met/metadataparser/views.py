@@ -91,6 +91,7 @@ def federation_delete(request, federation_id):
 
 def entity_view(request, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
+
     return render_to_response('metadataparser/entity_view.html',
             {'entity': entity,
             }, context_instance=RequestContext(request))
@@ -159,6 +160,7 @@ def search_service(request):
 
     else:
             form = ServiceSearchForm()
+    print entity.types
     return render_to_response('metadataparser/service_search.html',
             {'searchform': form,
              'entity': entity,

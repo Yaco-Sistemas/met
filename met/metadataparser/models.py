@@ -133,11 +133,11 @@ class Entity(Base):
 
     @property
     def name(self):
-        return self._get_property('displayname')
+        return self._get_property('displayName')
 
     @property
     def types(self):
-        return self._get_property('types')
+        return self._get_property('entity_types')
 
     class Meta:
         verbose_name = _(u'Entity')
