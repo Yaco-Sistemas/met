@@ -14,10 +14,10 @@
   {% endfor %}
 </thead>
 <tbody>
-  {% for object in objects %}
+  {% for obj in objects %}
     <tr>
-      {% for value in object.values %}
-      <td>{{ value|default:'' }}</td>
+      {% for field in fields %}
+      <td>{% get_property obj field %}</td>
       {% endfor %}
     </tr>
   {% endfor %}

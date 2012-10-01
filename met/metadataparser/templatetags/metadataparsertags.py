@@ -78,3 +78,10 @@ def l10n_property(context, prop):
         else:
             return prop[prop.keys()[0]]
     return prop
+
+
+@register.simple_tag()
+def get_property(obj, prop=None):
+    if not unicode(prop):
+        return unicode(obj)
+    return getattr(obj, unicode(prop), '')

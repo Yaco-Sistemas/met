@@ -182,23 +182,26 @@ def search_service_export(request, mode='json'):
                                 unicode(entity),  ('name', 'url'))
 
 
-def generic_html_table(request, title, objects, fields):
+def generic_html_table(request, title, objects, fields, headers=None):
 
     model = objects.model
-    headers = []
-    for field in fields:
-        model_field = model._meta.get_field(field)
-        headers.append(model_field.verbose_name)
+
+    if not headers:
+        headers = []
+        for field in fields:
+            model_field = model._meta.get_field(field)
+            headers.append(model_field.verbose_name)
 
     return render_to_response('metadataparser/generic_list.html',
                                   {'objects': objects.values(fields),
                                    'headers': headers,
+                                   'fields': fields,
                                    'title': _('Edugain services'),
                                   },
                                   context_instance=RequestContext(request))
 
 
-def generic_list(request, objects, format, fields, title, filename):
+def generic_list(request, objects, format, fields, headers, title, filename):
     model = objects.model
     headers = []
     for fieldname in fields:
@@ -210,11 +213,12 @@ def generic_list(request, objects, format, fields, title, filename):
                 headers.append(fieldname.capitalize())
 
     if format:
-        return export_query_set(format, objects, filename, fields)
+        return export_query_set(format, objects, filename, fields, headers)
     else:
         return render_to_response('metadataparser/generic_list.html',
-                                  {'objects': objects.values(*fields),
+                                  {'objects': objects,
                                    'headers': headers,
+                                   'fields': fields,
                                    'title': title,
                                   },
                                   context_instance=RequestContext(request))
@@ -223,12 +227,14 @@ def generic_list(request, objects, format, fields, title, filename):
 def edugain_services(request):
     entities = Entity.objects.filter(federations__part_of_edugain=True)
     return generic_list(request, entities, request.GET.get('format', None),
-                        ('entityid', 'entity_type',),
+                        ('entityid', 'types',),
+                        ('entityid', 'types',),
                         _(u'Edugain services'), 'edugain-services')
 
 
 def edugain_federations(request):
     federations = Federation.objects.filter(part_of_edugain=True)
     return generic_list(request, federations, request.GET.get('format', None),
+                        ('name', 'url',),
                         ('name', 'url',),
                         _(u'Edugain federations'), 'edugain-federations')
