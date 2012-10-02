@@ -105,10 +105,10 @@ def export_xml(qs, filename, fields=None):
                 element.appendChild(xmlval)
                 item.appendChild(element)
         root.appendChild(item)
-    # Return JS file to browser as download
+    # Return xml file to browser as download
     response = HttpResponse(xml.toxml(), mimetype='application/xml')
-    #response['Content-Disposition'] = ('attachment; filename=%s.xml'
-    #                                   % slugify(filename))
+    response['Content-Disposition'] = ('attachment; filename=%s.xml'
+                                       % slugify(filename))
     return response
 
 
