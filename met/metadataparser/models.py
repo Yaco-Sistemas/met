@@ -190,12 +190,15 @@ class Entity(Base):
             elif entity_data:
                 self._entity_cached = entity_data
             else:
-                federations = self.federations.all()
-                if federations:
-                    federation = federations[0]
-                else:
+                for federation in self.federations.all():
+                    try:
+                        self._entity_cached = federation.get_entity_metadata(self.entityid)
+                    except ValueError:
+                        continue
+                    else:
+                        break
+                if not self._entity_cached:
                     raise ValueError("Can't find entity metadata")
-                self._entity_cached = federation.get_entity_metadata(self.entityid)
 
     def _get_property(self, prop):
         self.load_metadata()
