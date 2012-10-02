@@ -1,4 +1,5 @@
 {% load i18n metadataparsertags %}
+{% if federations %}
 <table class="table .table-bordered">
   <thead>
     <tr>
@@ -24,4 +25,7 @@
   {% endfor %}
 </tbody>
 </table>
+{% else %}
+{% trans "There isn't federations" %}
+{% endif %}
 <a href="{% url federation_add %}">{% trans "add" %}</a>
