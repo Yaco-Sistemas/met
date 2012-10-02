@@ -13,15 +13,17 @@
 {{ hidden }}
 {% endfor %}
 {% for field in form.visible_fields %}
-<fieldset class="control-group">
+<fieldset class="control-group {% if field.errors %}warning{% endif %}">
     <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
     <div class="controls">
         {{ field }}
-        <p class="help-text"> {{ field.help_text }} </p>
         {% if field.errors %}
         <span class="help-inline">
           {% for error in field.errors %}{{ error }}{% endfor %}
         </span>
+        {% endif %}
+        {% if field.help_text %}
+        <p class="help-text"> {{ field.help_text }} </p>
         {% endif %}
     </div>
 </fieldset>
