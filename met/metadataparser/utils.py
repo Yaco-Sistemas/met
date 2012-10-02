@@ -83,7 +83,6 @@ def export_xml(qs, filename, fields=None):
             headers.append(field.name)
         fields = headers
     for obj in qs:
-        print unicode(obj)
         item = xml.createElement(model._meta.object_name)
         item.setAttribute("id", unicode(obj))
         for field in fields:
