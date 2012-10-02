@@ -2,12 +2,12 @@ from os import path
 import requests
 from urlparse import urlsplit
 
+from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
-from django.core.files.base import ContentFile
-
 from django.utils.translation import ugettext_lazy as _
 
 from met.metadataparser.xmlparser import MetadataParser
@@ -33,6 +33,9 @@ class Base(models.Model):
 
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
+
+    user_editors = models.ManyToManyField(User,
+                                          verbose_name=_('user editors'))
 
     class Meta:
         abstract = True
