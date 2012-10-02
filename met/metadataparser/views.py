@@ -196,7 +196,7 @@ def generic_list(request, objects, format, fields, headers, title, filename):
                 headers.append(fieldname.capitalize())
 
     if format:
-        return export_query_set(format, objects, filename, fields, headers)
+        return export_query_set(format, objects, filename, fields)
 
     page = None
     if request.GET and 'page' in request.GET:
@@ -223,8 +223,8 @@ def generic_list(request, objects, format, fields, headers, title, filename):
 def edugain_services(request):
     entities = Entity.objects.filter(federations__part_of_edugain=True)
     return generic_list(request, entities, request.GET.get('format', None),
-                        ('entityid', 'types'),
-                        ('entityid', 'types'),
+                        ('entityid', 'federations',),
+                        ('entityid', 'federations',),
                         _(u'Edugain services'), 'edugain-services')
 
 

@@ -1,7 +1,6 @@
 from django import template
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
-
 from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
@@ -87,8 +86,11 @@ def l10n_property(context, prop):
 
 @register.simple_tag()
 def get_property(obj, prop=None):
-    if not unicode(prop):
+    uprop = unicode(prop)
+    if not uprop:
         return unicode(obj)
-    if isinstance(getattr(obj, unicode(prop), ''), list):
-        return ', '.join(getattr(obj, unicode(prop), []))
-    return getattr(obj, unicode(prop), '')
+    if getattr(getattr(obj, uprop, None), 'all', None):
+        return ', '.join([unicode(item) for item in getattr(obj, uprop).all()])
+    if isinstance(getattr(obj, uprop, ''), list):
+        return ', '.join(getattr(obj, uprop, []))
+    return getattr(obj, uprop, '')

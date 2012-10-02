@@ -131,12 +131,18 @@ class EntityQuerySet(QuerySet):
                 else:
                     raise ValueError("Can't find entity metadata")
 
-                if federation.id in cached_federations:
-                    entity.load_metadata(
-                             federation=cached_federations[federation.id])
-                else:
-                    cached_federations[federation.id] = federation
-                    entity.load_metadata(federation=federation)
+                for federation in federations:
+                    if not federation.id in cached_federations:
+                        cached_federations[federation.id] = federation
+
+                    cached_federation = cached_federations[federation.id]
+                    try:
+                        entity.load_metadata(federation=cached_federation)
+                    except ValueError:
+                        # Allow entity in federation but not in federation file
+                        continue
+                    else:
+                        break
 
             yield entity
 
@@ -153,7 +159,8 @@ class Entity(Base):
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federations'))
 
-    objects = EntityManager()
+    objects = models.Manager()
+    longlist = EntityManager()
 
     @property
     def organization(self):

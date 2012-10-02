@@ -86,7 +86,7 @@ class MetadataParser(object):
         if len(entity_xpath):
             entity_etree = entity_xpath[0]
         else:
-            raise ValueError("Entity not found")
+            raise ValueError("Entity not found: %s" % entityid)
         entity_attrs = (('entityid', 'entityID'), ('file_id', 'ID'))
         entity = {}
         for (dict_attr, etree_attr) in entity_attrs:
