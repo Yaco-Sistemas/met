@@ -14,7 +14,7 @@ from met.metadataparser.xmlparser import MetadataParser
 
 
 def update_obj(mobj, obj, attrs=None):
-    for_attrs = attrs or mobj.all_attrs
+    for_attrs = attrs or getattr(mobj, 'all_attrs', [])
     for attrb in attrs or for_attrs:
         if (getattr(mobj, attrb, None) and
             getattr(obj, attrb, None) and
