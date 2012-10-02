@@ -34,8 +34,8 @@ class Base(models.Model):
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
 
-    user_editors = models.ManyToManyField(User,
-                                          verbose_name=_('user editors'))
+    editor_users = models.ManyToManyField(User,
+                                          verbose_name=_('editor users'))
 
     class Meta:
         abstract = True
