@@ -61,6 +61,11 @@ def federations_summary(federations=None, page=1):
             'entity_types': DESCRIPTOR_TYPES}
 
 
+@register.inclusion_tag('metadataparser/tag_paginator.html')
+def paginator(objects):
+    return {'objs': objects}
+
+
 @register.simple_tag()
 def entities_count(federation, entity_type=None):
     if entity_type and entity_type != 'All':
@@ -84,4 +89,6 @@ def l10n_property(context, prop):
 def get_property(obj, prop=None):
     if not unicode(prop):
         return unicode(obj)
+    if isinstance(getattr(obj, unicode(prop), ''), list):
+        return ', '.join(getattr(obj, unicode(prop), []))
     return getattr(obj, unicode(prop), '')

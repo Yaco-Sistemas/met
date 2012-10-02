@@ -1,5 +1,6 @@
-{% load i18n %}
+{% load i18n metadataparsertags %}
 
+{% paginator entities %}
 <ul>
   {% for entity in entities %}
   <li>
@@ -11,20 +12,4 @@
   </li>
   {% endfor %}
 </ul>
-<div class="pagination">
-    <span class="step-links">
-    {% if entities.has_previous %}
-      <a href="?page={{ entities.previous_page_number }}{{ append_url }}">previous</a>
-    {% endif %}
-
-    {% if entities.paginator.num_pages != entities.number %}
-    <span class="current">
-      Page {{ entities.number }} of {{ entities.paginator.num_pages }}.
-    </span>
-    {% endif %}
-
-    {% if entities.has_next %}
-      <a href="?page={{ entities.next_page_number }}{{ append_url }}">next</a>
-    {% endif %}
-    </span>
-</div>
+{% paginator entities %}

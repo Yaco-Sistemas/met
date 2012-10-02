@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>{% trans "Rows:" %} {{ objects|length }} </h3>
+{% paginator objects %}
 <table class="table table-bordered">
 <thead>
   {% for column in headers %}
@@ -23,6 +23,8 @@
   {% endfor %}
 </tbody>
 </table>
+{% paginator objects %}
+
 <div class="btn-group dropup">
   <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
       {% trans "Export" %}

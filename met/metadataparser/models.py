@@ -120,12 +120,40 @@ class Federation(Base):
                     entity = self.entity_set.create(entityid=m_id)
 
 
+class EntityQuerySet(QuerySet):
+    def iterator(self):
+        cached_federations = {}
+        for entity in super(EntityQuerySet, self).iterator():
+            if not entity.file:
+                federations = entity.federations.all()
+                if federations:
+                    federation = federations[0]
+                else:
+                    raise ValueError("Can't find entity metadata")
+
+                if federation.id in cached_federations:
+                    entity.load_metadata(
+                             federation=cached_federations[federation.id])
+                else:
+                    cached_federations[federation.id] = federation
+                    entity.load_metadata(federation=federation)
+
+            yield entity
+
+
+class EntityManager(models.Manager):
+    def get_query_set(self):
+        return EntityQuerySet(self.model, using=self._db)
+
+
 class Entity(Base):
 
     entityid = models.CharField(blank=False, max_length=200, unique=True,
                                 verbose_name=_(u'EntityID'), db_index=True)
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federations'))
+
+    objects = EntityManager()
 
     @property
     def organization(self):
@@ -202,8 +230,3 @@ def federation_pre_save(sender, instance, **kwargs):
 def entity_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
-
-
-#@receiver(post_save, sender=Federation, dispatch_uid='federation_post_save')
-#def process_metadata_entities(sender, instance, **kwargs):
-#    instance.process_metadata_entities()

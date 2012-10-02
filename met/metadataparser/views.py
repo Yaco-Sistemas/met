@@ -1,4 +1,6 @@
 from django.contrib import messages
+from django.conf import settings
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db.models.fields import FieldDoesNotExist
 from django.http import HttpResponseRedirect
@@ -159,11 +161,11 @@ def search_service(request):
                                          % {'entityid': entityid}))
 
     else:
-            form = ServiceSearchForm()
+        form = ServiceSearchForm()
     return render_to_response('metadataparser/service_search.html',
-            {'searchform': form,
-             'entity': entity,
-            }, context_instance=RequestContext(request))
+        {'searchform': form,
+         'entity': entity,
+        }, context_instance=RequestContext(request))
 
 
 def search_service_export(request, mode='json'):
@@ -179,26 +181,7 @@ def search_service_export(request, mode='json'):
                                          % {'entityid': entityid}))
 
         return export_query_set(mode, entity.federations.all(),
-                                unicode(entity),  ('name', 'url'))
-
-
-def generic_html_table(request, title, objects, fields, headers=None):
-
-    model = objects.model
-
-    if not headers:
-        headers = []
-        for field in fields:
-            model_field = model._meta.get_field(field)
-            headers.append(model_field.verbose_name)
-
-    return render_to_response('metadataparser/generic_list.html',
-                                  {'objects': objects.values(fields),
-                                   'headers': headers,
-                                   'fields': fields,
-                                   'title': _('Edugain services'),
-                                  },
-                                  context_instance=RequestContext(request))
+                                entity, ('name', 'url'))
 
 
 def generic_list(request, objects, format, fields, headers, title, filename):
@@ -214,21 +197,34 @@ def generic_list(request, objects, format, fields, headers, title, filename):
 
     if format:
         return export_query_set(format, objects, filename, fields, headers)
-    else:
-        return render_to_response('metadataparser/generic_list.html',
-                                  {'objects': objects,
-                                   'headers': headers,
-                                   'fields': fields,
-                                   'title': title,
-                                  },
-                                  context_instance=RequestContext(request))
+
+    page = None
+    if request.GET and 'page' in request.GET:
+        page = request.GET['page']
+
+    paginator = Paginator(objects, getattr(settings, 'PAGE_LENGTH', 25))
+
+    try:
+        objs_page = paginator.page(page)
+    except PageNotAnInteger:
+        objs_page = paginator.page(1)
+    except EmptyPage:
+        objs_page = paginator.page(paginator.num_pages)
+
+    return render_to_response('metadataparser/generic_list.html',
+                              {'objects': objs_page,
+                               'headers': headers,
+                               'fields': fields,
+                               'title': title,
+                              },
+                              context_instance=RequestContext(request))
 
 
 def edugain_services(request):
     entities = Entity.objects.filter(federations__part_of_edugain=True)
     return generic_list(request, entities, request.GET.get('format', None),
-                        ('entityid', 'types',),
-                        ('entityid', 'types',),
+                        ('entityid', 'types'),
+                        ('entityid', 'types'),
                         _(u'Edugain services'), 'edugain-services')
 
 
