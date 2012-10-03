@@ -58,6 +58,8 @@ def federation_edit(request, federation_id=None):
     if request.method == 'POST':
         form = FederationForm(request.POST, request.FILES, instance=federation)
         if form.is_valid():
+            if not federation:
+                form.instance.editor_users.add(request.user)
             form.save()
             if 'file' in form.changed_data or 'file_url' in form.changed_data:
                 form.instance.process_metadata()

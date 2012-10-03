@@ -94,3 +94,9 @@ def get_property(obj, prop=None):
     if isinstance(getattr(obj, uprop, ''), list):
         return ', '.join(getattr(obj, uprop, []))
     return getattr(obj, uprop, '')
+
+
+@register.simple_tag(takes_context=True)
+def can_edit(context, obj):
+    user = context.get('user', None)
+    return obj.can_edit(user)

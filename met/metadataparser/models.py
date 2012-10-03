@@ -64,6 +64,9 @@ class Base(models.Model):
     def process_metadata(self):
         raise NotImplemented()
 
+    def can_edit(self, user):
+        return (user.is_staff() or user in self.editor_users.all())
+
 
 class XmlDescriptionError(Exception):
     pass
@@ -218,6 +221,13 @@ class Entity(Base):
             raise ValueError("EntityID is not the same")
 
         self._entity_cached = entity_data
+
+    def can_edit(self, user):
+        if super(Entity, self).can_edit(user):
+            return True
+        for federation in self.federations.all():
+            if federation.can_edit(user):
+                return True
 
 
 class EntityLogo(models.Model):
