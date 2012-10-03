@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% load i18n metadataparsertags %}
 
-
 {% block content %}
 
-
-<ul class="unstyled">
+<ul class="nav nav-pills">
   <li>
     <a href="{% url search_service %}">{% trans "Search service" %}</a>
   </li>
@@ -17,10 +15,8 @@
   </li>
 </ul>
 
+<h2>{% trans "Federations summary" %}</h2>
 
 {% federations_summary %}
-
-
-
 
 {% endblock %}

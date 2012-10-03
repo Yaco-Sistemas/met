@@ -97,6 +97,14 @@ def get_property(obj, prop=None):
     return getattr(obj, uprop, '')
 
 
+@register.simple_tag(takes_context=True)
+def active_url(context, pattern):
+    request = context.get('request')
+    if request.path == pattern:
+        return 'active'
+    return ''
+
+
 class CanEdit(Node):
     child_nodelists = ('nodelist')
 

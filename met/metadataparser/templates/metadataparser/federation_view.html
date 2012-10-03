@@ -3,15 +3,16 @@
 
 {% block appendheader %}
 <h2>{% trans "Federation" %} {{ federation }}</h2>
+
+{% canedit federation %}
+<div class="btn-group pull-right">
+ <a class="btn" href="{% url federation_edit federation.id %}">{% trans "edit" %}</a>
+ <a class="btn" href="{% url entity_add federation.id %}">{% trans "add entity" %}</a>
+</div>
+{% endcanedit %}
 {% endblock %}
 
 {% block content %}
-<a href="{% url federations_list %}">{% trans "federations list"%}</a>
-
-{% canedit federation %}
-| <a href="{% url federation_edit federation.id %}">{% trans "edit" %}</a>
-{% endcanedit %}
-
 <dl class="dl-horizontal">
   <dt>{% trans "Organization" %}</dt>
   <dd><a href="{{ federation.organization_link }}">{{ federation }}</a></dd>
@@ -19,6 +20,7 @@
   <dt>{% trans "Metadata file" %}</dt>
   <dd><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "metadata file" %}</a></dd>
 </dl>
+
 
 <div class="tabbable tabs-left">
 <ul class="nav nav-tabs">
@@ -33,6 +35,7 @@
 <div class="tab-content">
 {% federation_entities_list federation entities page entity_type %}
 </div>
+
 </div>
 
 {% endblock %}
