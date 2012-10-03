@@ -65,7 +65,7 @@ class Base(models.Model):
         raise NotImplemented()
 
     def can_edit(self, user):
-        return (user.is_staff() or user in self.editor_users.all())
+        return (user.is_superuser or user in self.editor_users.all())
 
 
 class XmlDescriptionError(Exception):

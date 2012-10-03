@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
@@ -8,6 +9,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
+
+from met.metadataparser.decorators import user_can_edit
 from met.metadataparser.models import Federation, Entity
 from met.metadataparser.forms import (FederationForm, EntityForm,
                                       ServiceSearchForm)
@@ -49,6 +52,7 @@ def federation_view(request, federation_id):
             }, context_instance=RequestContext(request))
 
 
+@user_can_edit(Federation)
 def federation_edit(request, federation_id=None):
     if federation_id is None:
         federation = None
@@ -84,6 +88,7 @@ def federation_edit(request, federation_id=None):
                               context_instance=RequestContext(request))
 
 
+@login_required
 def federation_delete(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
     messages.success(request,
@@ -101,6 +106,7 @@ def entity_view(request, entity_id):
             }, context_instance=RequestContext(request))
 
 
+@login_required
 def entity_edit(request, federation_id=None, entity_id=None):
     entity = None
     federation = None
@@ -140,6 +146,7 @@ def entity_edit(request, federation_id=None, entity_id=None):
                               context_instance=RequestContext(request))
 
 
+@login_required
 def entity_delete(request, federation_id, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
     messages.success(request,
