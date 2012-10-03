@@ -1,17 +1,28 @@
+{% load i18n %}
 <div class="pagination">
-    <span class="step-links">
+    <ul>
     {% if objs.has_previous %}
-      <a href="?page={{ objs.previous_page_number }}{{ append_url }}">previous</a>
+      <li><a href="?page={{ objs.previous_page_number }}{{ append_url }}"> &lsaquo;&lsaquo; {% trans "previous" %}</a></li>
+    {% else %}
+      <li><a class="disabled prev" href="#"> &lsaquo;&lsaquo; {% trans "previous" %}</a></li>
     {% endif %}
 
-    {% if objs.paginator.num_pages != objs.number %}
-    <span class="current">
-      Page {{ objs.number }} of {{ objs.paginator.num_pages }}.
-    </span>
-    {% endif %}
+    {% for page in pages %}
+        {% if page %}
+            {% ifequal page objs.number %}
+                <li class="current page active"><a href="#">{{ page }}</a></li>
+            {% else %}
+                <li><a class="page" href="?page={{ page }}{{ append_url }}">{{page}}</a></li>
+            {% endifequal %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
 
     {% if objs.has_next %}
-      <a href="?page={{ objs.next_page_number }}{{ append_url }}">next</a>
+      <li><a class="next" href="?page={{ objs.next_page_number }}{{ append_url }}">{% trans "next" %} &rsaquo;&rsaquo;</a></li>
+    {% else %}
+      <li><a class="disabled next" href="#">{% trans "next" %} &rsaquo;&rsaquo;</a></li>
     {% endif %}
-    </span>
+    </ul>
 </div>

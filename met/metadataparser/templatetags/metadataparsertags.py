@@ -63,7 +63,20 @@ def federations_summary(federations=None, page=1):
 
 @register.inclusion_tag('metadataparser/tag_paginator.html')
 def paginator(objects):
-    return {'objs': objects}
+    ratio = 2
+    pages = objects.paginator.num_pages
+    cpage = objects.number
+    if (cpage - ratio) > 0:
+        pmin = cpage - ratio
+    else:
+        pmin = 0
+    if (cpage + ratio + 1) < pages:
+        pmax = cpage + ratio + 1
+    else:
+        pmax = objects.paginator.num_pages
+    pages = range(pmin, pmax)
+    return {'objs': objects,
+            'pages': pages}
 
 
 @register.simple_tag()
