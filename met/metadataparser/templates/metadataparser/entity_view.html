@@ -6,7 +6,9 @@
 {% endblock %}
 
 {% block content %}
+{% canedit entity %}
 <a href="{% url entity_edit entity.id %}">{% trans "edit" %}</a>
+{% encanedit %}
 
 {% for logo in entity.entitylogo_set.all %}
   <img alt={{ logo }} src="{{ MEDIA_URL }}{{ logo.file }}">

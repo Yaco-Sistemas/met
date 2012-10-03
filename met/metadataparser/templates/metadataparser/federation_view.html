@@ -6,8 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<a href="{% url federations_list %}">{% trans "federations list"%}</a> |
-<a href="{% url federation_edit federation.id %}">{% trans "edit" %}</a>
+<a href="{% url federations_list %}">{% trans "federations list"%}</a>
+
+{% canedit federation %}
+| <a href="{% url federation_edit federation.id %}">{% trans "edit" %}</a>
+{% endcanedit %}
 
 <dl class="dl-horizontal">
   <dt>{% trans "Organization" %}</dt>

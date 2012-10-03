@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
+from django.template.base import Node, TemplateSyntaxError
 
 register = template.Library()
 
@@ -96,7 +97,45 @@ def get_property(obj, prop=None):
     return getattr(obj, uprop, '')
 
 
-@register.simple_tag(takes_context=True)
-def can_edit(context, obj):
-    user = context.get('user', None)
-    return obj.can_edit(user)
+class CanEdit(Node):
+    child_nodelists = ('nodelist')
+
+    def __init__(self, obj, nodelist):
+        self.obj = obj
+        self.nodelist = nodelist
+
+    def __repr__(self):
+        return "<CanEdit>"
+
+    def render(self, context):
+        obj = self.obj.resolve(context, True)
+        user = context.get('user')
+        if obj.can_edit(user):
+            return self.nodelist.render(context)
+        else:
+            return ''
+
+
+def do_canedit(parser, token):
+    bits = list(token.split_contents())
+    if len(bits) != 2:
+        raise TemplateSyntaxError("%r takes 1 argument" % bits[0])
+    end_tag = 'end' + bits[0]
+    nodelist = parser.parse((end_tag,))
+    obj = parser.compile_filter(bits[1])
+    token = parser.next_token()
+    return CanEdit(obj, nodelist)
+
+
+@register.tag
+def canedit(parser, token):
+    """
+    Outputs the contents of the block if user has edit pemission
+
+    Examples::
+
+        {% canedit obj %}
+            ...
+        {% endcanedit %}
+    """
+    return do_canedit(parser, token)
