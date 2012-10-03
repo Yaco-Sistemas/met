@@ -25,9 +25,9 @@
           <li class="divider-vertical"></li>
       </ul>
         {% if request.user.is_authenticated %}
-            <a class="btn pull-right" href="logout">{% trans "Logout" %}</a>
+          <a class="navbar-text pull-right" href="logout">{% trans "Logout" %}</a>
         {% else %}
-            <a class="btn pull-right" href="login">{% trans "login" %}</a>
+          <a class="nabar-text pull-right" href="login">{% trans "login" %}</a>
         {% endif %}
       </div>
     </div>
