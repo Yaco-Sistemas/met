@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from met.metadataparser.xmlparser import MetadataParser
+from met.metadataparser.utils import compare_filecontents
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -58,6 +59,12 @@ class Base(models.Model):
         if req.ok:
             req.raise_for_status()
         parsed_url = urlsplit(self.file_url)
+        if self.file:
+            self.file.seek(0)
+            original_file_content = self.file.read()
+            if compare_filecontents(original_file_content, req.content):
+                return
+
         filename = path.basename(parsed_url.path)
         self.file.save(filename, ContentFile(req.content), save=False)
 

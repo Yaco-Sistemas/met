@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 import django.utils.simplejson as json
 from xml.dom.minidom import Document
+import hashlib
 
 
 ## Taken from http://djangosnippets.org/snippets/790/
@@ -124,3 +125,9 @@ def export_query_set(mode, qs, filename, fields=None):
     else:
         content = "Error 400, Format %s is not supported" % mode
         return HttpResponseBadRequest(content)
+
+
+def compare_filecontents(a, b):
+    md5_a = hashlib.md5(a).hexdigest()
+    md5_b = hashlib.md5(b).hexdigest()
+    return (md5_a == md5_b)
