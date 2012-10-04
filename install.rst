@@ -105,9 +105,9 @@ This is a basic template which use the home of met user
     Allow from all
     </Directory>
 
-    WSGIScriptAlias / /home/met/met/wsgi.py
+    WSGIScriptAlias / /home/met/met/django-wsgi.py
 
-    <Directory /home/met/met/wsgi.py>
+    <Directory /home/met/met/django-wsgi.py>
     Order allow,deny
     Allow from all
     </Directory>
