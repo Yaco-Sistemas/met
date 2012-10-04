@@ -58,6 +58,7 @@ setup(name='met',
           'PIL',
           'python-memcached',
           'requests',
+          'djangosaml2',
       ],
       entry_points="""
       # -*- Entry points: -*-

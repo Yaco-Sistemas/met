@@ -1,6 +1,8 @@
 # Django settings for met project.
 
 import os
+import saml2
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
@@ -81,7 +83,12 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-LOGIN_URL = '/admin/'
+LOGIN_URL = '/saml2/login/'
+LOGOUT_URL = '/saml2/logout/'
+REDIRECT_LOGIN_URL = '/'
+REDIRECT_LOGOUT_URL = '/'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wcc$cfn0p!+@kv%@9y^u3^6fax5_a-n84^o*gl94!%kqc!fm-n'
@@ -129,6 +136,9 @@ INSTALLED_APPS = (
 
     'met.portal',
     'met.metadataparser',
+
+
+    'djangosaml2',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -164,15 +174,18 @@ LOGGING = {
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 #    'django.core.context_processors.debug',
+
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
+    'met.portal.context.portal_settings',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'djangosaml2.backends.Saml2Backend',
 )
 
 CACHES = {
@@ -184,6 +197,18 @@ CACHES = {
 }
 
 PAGE_LENGTH = 25
+
+
+SAML2DIR = os.path.join(BASEDIR, 'saml2')
+
+SAML_CREATE_UNKNOWN_USER = True
+
+SAML_ATTRIBUTE_MAPPING = {
+    'mail': ('username', 'email', ),
+    'cn': ('first_name', ),
+    'sn': ('last_name', ),
+}
+
 
 try:
     from local_settings import *

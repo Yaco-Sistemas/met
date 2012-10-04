@@ -19,6 +19,7 @@ Install requirements
    * libxml2-dev
    * libxslt-dev
    * libpq-dev
+   * xmlsec1
 
 
 Create database
@@ -122,3 +123,10 @@ Initialize media directory with correct permissions
     python manage.py collectstatic
     mkdir ~/media
     chmod g+srw ~/media
+
+
+Saml2 Authentication integration
+********************************
+
+(( COMPLETE THIS ))
+

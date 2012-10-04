@@ -66,15 +66,15 @@ def paginator(objects):
     ratio = 2
     pages = objects.paginator.num_pages
     cpage = objects.number
-    if (cpage - ratio) > 0:
+    if (cpage - ratio) > 1:
         pmin = cpage - ratio
     else:
-        pmin = 0
-    if (cpage + ratio + 1) < pages:
-        pmax = cpage + ratio + 1
+        pmin = 1
+    if (cpage + ratio) < pages:
+        pmax = cpage + ratio
     else:
         pmax = objects.paginator.num_pages
-    pages = range(pmin, pmax)
+    pages = range(pmin, pmax + 1)
     return {'objs': objects,
             'pages': pages}
 
