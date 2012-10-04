@@ -2,7 +2,7 @@ from django import template
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 from met.metadataparser.models import Federation
-from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
+from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
 from django.template.base import Node, TemplateSyntaxError
 
 register = template.Library()
@@ -103,6 +103,8 @@ def get_property(obj, prop=None):
     uprop = unicode(prop)
     if not uprop:
         return unicode(obj)
+    if isinstance(obj, dict):
+        return obj.get(prop, None)
     if getattr(getattr(obj, uprop, None), 'all', None):
         return ', '.join([unicode(item) for item in getattr(obj, uprop).all()])
     if isinstance(getattr(obj, uprop, ''), list):
@@ -116,6 +118,23 @@ def active_url(context, pattern):
     if request.path == pattern:
         return 'active'
     return ''
+
+
+@register.filter(name='display_etype')
+def display_etype(value, separator=', '):
+    if isinstance(value, list):
+        display = []
+        for item in value:
+            if value in DESCRIPTOR_TYPES_DISPLAY:
+                display.append(DESCRIPTOR_TYPES_DISPLAY.get(value))
+            else:
+                display.append(value)
+        return separator.join(display)
+    else:
+        if value in DESCRIPTOR_TYPES_DISPLAY:
+            return DESCRIPTOR_TYPES_DISPLAY.get(value)
+        else:
+            return value
 
 
 class CanEdit(Node):

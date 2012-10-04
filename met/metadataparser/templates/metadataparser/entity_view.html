@@ -27,7 +27,7 @@
   <dd>{{ entity.entityid }}</dd>
 
   <dt>{% trans "Entity Types" %}</dt>
-  <dd>{{ entity.types|join:", " }}</dd>
+  <dd>{{ entity.types|display_etype }}</dd>
 
   {% if entity.organization %}
   <dt>{% trans "Organization" %}</dt>

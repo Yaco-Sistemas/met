@@ -13,25 +13,25 @@
      <link href="{{ STATIC_URL }}css/styles.css" rel="stylesheet">
   </head>
   <body>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <a class="brand" href="{% url index %}">{% trans "Metadata Explorer Tool" %}</a>
-        <ul class="nav">
-          <li class="divider-vertical"></li>
-          {% url index as index %}
-          <li class="{% active_url index %}">
-            <a  href="{{ index }}" >{% trans "Home" %}</a>
-          </li>
-          <li class="divider-vertical"></li>
-      </ul>
-        {% if request.user.is_authenticated %}
-          <a class="navbar-text pull-right" href="{{ portal_settings.LOGOUT_URL }}?next={{ request.path }}">{{ request.user }} - {% trans "Logout" %}</a>
-        {% else %}
-          <a class="nabar-text pull-right" href="{{ portal_settings.LOGIN_URL }}?next={{ request.path }}">{% trans "login" %}</a>
-        {% endif %}
+    <div class="container">
+      <div class="navbar row">
+        <div class="navbar-inner">
+          <a class="brand" href="{% url index %}">{% trans "Metadata Explorer Tool" %}</a>
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            {% url index as index %}
+            <li class="{% active_url index %}">
+              <a  href="{{ index }}" >{% trans "Home" %}</a>
+            </li>
+            <li class="divider-vertical"></li>
+          </ul>
+          {% if request.user.is_authenticated %}
+            <a class="navbar-text pull-right" href="{{ portal_settings.LOGOUT_URL }}?next={{ request.path }}">{{ request.user }} - {% trans "Logout" %}</a>
+          {% else %}
+            <a class="nabar-text pull-right" href="{{ portal_settings.LOGIN_URL }}?next={{ request.path }}">{% trans "login" %}</a>
+          {% endif %}
+        </div>
       </div>
-    </div>
-    <div class="container-fluid">
       {% block appendheader %}
       {% endblock %}
       {% if messages %}
@@ -44,14 +44,9 @@
        {% endfor %}
       </div>
       {% endif %}
-
-      <div class="row-fluid">
-        {% block sidebar %}
-        {% endblock %}
-        <section>
+      <div class="row">
           {% block content %}
           {% endblock %}
-        </section>
       </div>
     </div>
 

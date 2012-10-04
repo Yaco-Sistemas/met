@@ -5,3 +5,5 @@
 local_settings.py
 *.egg-info
 met/media/
+saml2/certs
+saml2/remote_metadata.xml
