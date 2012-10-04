@@ -101,34 +101,15 @@ class MetadataParser(object):
         Organization = self.entity_organization(entity['entityid'])
         if Organization:
             entity['organization'] = Organization
+        logos = self.entity_logos(entity['entityid'])
+        if logos:
+            entity['logos'] = logos
 
         return entity
 
     def get_entities(self):
         # Return entityid list
         return self.etree.xpath("//@entityID")
-
-    def entity_organization(self, entityid):
-        orgs = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
-                                "/md:Organization" % entityid,
-                                namespaces=NAMESPACES)
-        languages = {}
-        for org_node in orgs:
-            for attr in ('name', 'displayName', 'URL'):
-                node_name = 'Organization' + attr[0].upper() + attr[1:]
-                for node in org_node.findall(addns(node_name)):
-                    lang = getlang(node)
-                    if lang is None:
-                        continue  # the lang attribute is required
-
-                    lang_dict = languages.setdefault(lang, {})
-                    lang_dict[attr] = node.text
-
-        result = []
-        for lang, data in languages.items():
-            data['lang'] = lang
-            result.append(data)
-        return result
 
     def entity_types(self, entityid):
         entity_base = "//md:EntityDescriptor[@entityID='%s']" % entityid
@@ -168,26 +149,41 @@ class MetadataParser(object):
 
         return languages
 
-    def entity_logos(self, entityid):
+    def entity_organization(self, entityid):
+        orgs = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                "/md:Organization" % entityid,
+                                namespaces=NAMESPACES)
         languages = {}
-        logos = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
-                                 " //mdui:UIInfo"
-                                 "/mdui:Logo" % entityid,
-                                 namespaces=NAMESPACES)
+        for org_node in orgs:
+            for attr in ('name', 'displayName', 'URL'):
+                node_name = 'Organization' + attr[0].upper() + attr[1:]
+                for node in org_node.findall(addns(node_name)):
+                    lang = getlang(node)
+                    if lang is None:
+                        continue  # the lang attribute is required
 
-        for logo_node in logos:
-            lang = getlang(logo_node)
-            if lang is None:
-                continue  # the lang attribute is required
-
-            lang_dict = languages.setdefault(lang, {})
-            lang_dict['width'] = logo_node.attrib.get('width', '')
-            lang_dict['height'] = logo_node.attrib.get('height', '')
-            lang_dict['location'] = logo_node.text
+                    lang_dict = languages.setdefault(lang, {})
+                    lang_dict[attr] = node.text
 
         result = []
         for lang, data in languages.items():
             data['lang'] = lang
             result.append(data)
-
         return result
+
+    def entity_logos(self, entityid):
+        xmllogos = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                 " //mdui:UIInfo"
+                                 "/mdui:Logo" % entityid,
+                                 namespaces=NAMESPACES)
+        logos = []
+        for logo_node in xmllogos:
+            if logo_node.text is None:
+                continue  # the file attribute is required
+            logo = {}
+            logo['width'] = logo_node.attrib.get('width', '')
+            logo['height'] = logo_node.attrib.get('height', '')
+            logo['file'] = logo_node.text
+            logo['external'] = True
+            logos.append(logo)
+        return logos

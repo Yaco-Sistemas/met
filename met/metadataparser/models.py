@@ -187,6 +187,10 @@ class Entity(Base):
     def types(self):
         return self._get_property('entity_types')
 
+    @property
+    def logos(self):
+        return list(self._get_property('logos')) + list(self.entitylogo_set.all())
+
     class Meta:
         verbose_name = _(u'Entity')
         verbose_name_plural = _(u'Entities')
