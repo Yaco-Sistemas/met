@@ -28,6 +28,7 @@
 {% else %}
 {% trans "There isn't federations" %}
 {% endif %}
-{% if request.user.is_authenticated %}
-<a href="{% url federation_add %}">{% trans "add federation" %}</a>
+
+{% if user.is_authenticated %}
+<a class="btn" href="{% url federation_add %}">{% trans "add federation" %}</a>
 {% endif %}

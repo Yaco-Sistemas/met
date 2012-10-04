@@ -20,8 +20,8 @@ def bootstrap_searchform(form):
     return {'form': form}
 
 
-@register.inclusion_tag('metadataparser/tag_entities_list.html')
-def federation_entities_list(federation, entities, page, entity_type=None):
+@register.inclusion_tag('metadataparser/tag_entities_list.html', takes_context=True)
+def federation_entities_list(context, federation, entities, page, entity_type=None):
 
     paginator = Paginator(entities, getattr(settings, 'PAGE_LENGTH', 25))
 
@@ -40,11 +40,12 @@ def federation_entities_list(federation, entities, page, entity_type=None):
     return {'federation': federation,
             'entity_type': entity_type,
             'append_url': append_url,
+            'user': context.get('user', None),
             'entities': entities_page}
 
 
-@register.inclusion_tag('metadataparser/federations_summary_tag.html')
-def federations_summary(federations=None, page=1):
+@register.inclusion_tag('metadataparser/federations_summary_tag.html', takes_context=True)
+def federations_summary(context, federations=None, page=1):
     if not federations:
         federations = Federation.objects.all()
 
@@ -58,6 +59,7 @@ def federations_summary(federations=None, page=1):
         federations_page = paginator.page(paginator.num_pages)
 
     return {'federations': federations_page,
+            'user': context.get('user', None),
             'entity_types': DESCRIPTOR_TYPES}
 
 
