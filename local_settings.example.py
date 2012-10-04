@@ -22,8 +22,8 @@ CACHES = {
 
 INTERNAL_IPS = ('192.168.122.1',)
 
-MEDIA_ROOT = os.path.join(os.environ.get('HOME'), 'media')
-STATIC_ROOT = os.path.join(os.environ.get('HOME'), 'static')
+MEDIA_ROOT = os.path.join(os.environ.get('HOME', '/home/met'), 'media')
+STATIC_ROOT = os.path.join(os.environ.get('HOME', '/home/met'), 'static')
 
 
 SAML_ATTRIBUTE_MAPPING = {
