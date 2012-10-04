@@ -3,6 +3,10 @@ import saml2
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
