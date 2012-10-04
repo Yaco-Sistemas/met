@@ -125,10 +125,10 @@ def display_etype(value, separator=', '):
     if isinstance(value, list):
         display = []
         for item in value:
-            if value in DESCRIPTOR_TYPES_DISPLAY:
-                display.append(DESCRIPTOR_TYPES_DISPLAY.get(value))
+            if item in DESCRIPTOR_TYPES_DISPLAY:
+                display.append(DESCRIPTOR_TYPES_DISPLAY.get(item))
             else:
-                display.append(value)
+                display.append(item)
         return separator.join(display)
     else:
         if value in DESCRIPTOR_TYPES_DISPLAY:

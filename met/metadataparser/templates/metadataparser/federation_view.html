@@ -22,17 +22,18 @@
 </dl>
 
 
-<div class="tabbable tabs-left">
+<div class="tabbable">
 <ul class="nav nav-tabs">
 {% for etype in entity_types %}
   {% url federation_view federation.id as federation_url %}
   <li {% if etype == entity_type %}class="active"{% endif %}>
   <a href="{{ federation_url }}{% if etype != 'All' %}?entity_type={{ etype }}{% endif %}">
-      {{ etype }} ({% entities_count federation etype %})</a>
+      {{ etype|display_etype }} ({% entities_count federation etype %})</a>
   </li>
 {% endfor %}
 </ul>
 <div class="tab-content">
+  <h3>{{ etype|display_etype }}</h3>
 {% federation_entities_list federation entities page entity_type %}
 </div>
 

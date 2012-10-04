@@ -1,15 +1,18 @@
 {% load i18n metadataparsertags %}
 
-{% paginator entities %}
-<ul>
+{% if entities %}
+<table class="table table-condensed table-stripped">
+  <tbody>
   {% for entity in entities %}
-  <li>
+  <tr>
+    <td>
     <a href="{% url entity_view entity.id %}">{{ entity }}</a>
-  </li>
-  {% empty %}
-  <li>
-   {% trans "There isn't entities with this filter" %}
-  </li>
+    </td>
+  </tr>
   {% endfor %}
-</ul>
+  </tbody>
+</table>
+{% else %}
+   {% trans "There isn't entities with this filter" %}
+{% endif %}
 {% paginator entities %}
