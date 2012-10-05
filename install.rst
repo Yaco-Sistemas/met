@@ -128,5 +128,27 @@ Initialize media directory with correct permissions
 Saml2 Authentication integration
 ********************************
 
-(( COMPLETE THIS ))
+The example local_settings has a generic configuration to integrate with SAML2
+Authentication.
 
+You need to change SAML_CONFIG according to your organization information.
+
+For testing purposes, you should create your own self-signed certificates. For
+other purposes buy them:
+
+   * Follow the first five steps of this guide:
+     http://www.akadia.com/services/ssh_test_certificate.html
+   * Create certs directory met/saml2/certs
+   * Copy server.key and server.crt to met/saml2/certs
+
+   .. code-block:: bash
+
+      openssl genrsa -des3 -out server.key 1024
+      openssl req -new -key server.key -out server.csr
+      cp server.key server.key.org
+      openssl rsa -in server.key.org -out server.key
+      openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+
+You need to get your IDP metadata and put in saml/remote_metadata.xml or
+another path you set in SAML_CONFIG.metatadata.local setting
