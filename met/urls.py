@@ -16,7 +16,16 @@ urlpatterns = patterns('',
     url(r'^saml2/', include('djangosaml2.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^error403.html$', 'met.portal.views.error403'),
+    url(r'^error404.html$', 'met.portal.views.error404'),
+    url(r'^error500.html$', 'met.portal.views.error500'),
+
+
 )
+
+handler403 = 'met.portal.views.error403'
+handler404 = 'met.portal.views.error404'
+handler500 = 'met.portal.views.error500'
 
 if settings.DEBUG:
     from django.views.static import serve
