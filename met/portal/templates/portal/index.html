@@ -3,6 +3,17 @@
 
 {% block content %}
 
+<div class="hero-unit">
+  <h1>{% blocktrans with org=portal_settings.ORGANIZATION_NAME %}{{ org }} Metadata Explorer Tool{% endblocktrans %}</h1>
+   <p>
+{% blocktrans %}
+  Metadata explorer tool is a fast way to find federations, entities and his relations through
+  entity/federation metadata file information.
+{% endblocktrans %}
+   </p>
+ </div>
+
+
 <ul class="nav nav-pills">
   <li>
     <a href="{% url search_service %}">{% trans "Search service" %}</a>
