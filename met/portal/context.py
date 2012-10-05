@@ -5,7 +5,8 @@ def portal_settings(request):
     """ Include some settings value in context """
 
     copy_attrs = ('LOGIN_URL',
-                  'LOGOUT_URL')
+                  'LOGOUT_URL',
+		  'ORGANIZATION_NAME')
 
     custom_settings = {}
 

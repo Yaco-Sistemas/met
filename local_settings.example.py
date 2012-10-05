@@ -36,6 +36,9 @@ SAML_ATTRIBUTE_MAPPING = {
     'sn': ('last_name', ),
 }
 
+
+ORGANIZATION_NAME = 'Your organization'
+
 SAML2DIR = os.path.join(BASEDIR, 'saml2')
 
 SAML_CONFIG = {
