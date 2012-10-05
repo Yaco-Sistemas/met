@@ -6,6 +6,8 @@
 {% endblock %}
 
 {% block content %}
+
+{% include "metadataparser/inc.export-menu.html" %}
 {% paginator objects %}
 <table class="table table-bordered">
 <thead>
@@ -23,17 +25,9 @@
   {% endfor %}
 </tbody>
 </table>
+
+{% include "metadataparser/inc.export-menu.html" %}
 {% paginator objects %}
 
-<div class="btn-group dropup">
-  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-      {% trans "Export" %}
-      <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li><a href="?format=csv">{% trans "csv" %}</a></li>
-    <li><a href="?format=json">{% trans "json" %}</a></li>
-    <li><a href="?format=xml">{% trans "xml" %}</a></li>
-  </ul>
-</div>
+
 {% endblock %}

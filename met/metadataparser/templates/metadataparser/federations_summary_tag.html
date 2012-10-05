@@ -1,5 +1,9 @@
 {% load i18n metadataparsertags %}
 {% if federations %}
+
+{% if user.is_authenticated %}
+<a class="btn pull-right" href="{% url federation_add %}">{% trans "Add federation" %}</a>
+{% endif %}
 <table class="table .table-bordered">
   <thead>
     <tr>
@@ -27,8 +31,4 @@
 </table>
 {% else %}
 {% trans "There isn't federations" %}
-{% endif %}
-
-{% if user.is_authenticated %}
-<a class="btn" href="{% url federation_add %}">{% trans "add federation" %}</a>
 {% endif %}
