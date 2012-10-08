@@ -4,47 +4,51 @@ User Manual
 ===========
 
 
-Metadata explorer tool is a fast way to find federations, entities and his
-relations through entity/federation metadata file information.
+The **Metadata Explorer Tool** is a fast way to find federations, entities and
+their relationships, through entity/federation metadata information files.
 
- * You can find information about a entity or federation
- * You can find how many and which services belong to a federation
- * You can find to which federations do an entity belong
- * You can find which federations or entities are part of Edugain
+* You can find information about an entity or a federation
+* You can find how many and which services belong to a federation
+* You can find to which federations do an entity belong
+* You can find which federations or entities are part of Edugain
 
 
 Permissions
 ***********
 
- * Only django superusers can add new Federations. You can modify users to
-   allow add federations through django admin interface.
- * Federation has a field "Editor users" that allow selected users to edit the
-   federation and his entities.
- * Entities has a field "Editor users" too, this allow select which users can
-   edit only this entity.
- * Anonymous users can watch all datas, but can't edit anything.
+* Only django superusers can add new Federations. You can modify the users to
+  allow them to add Federations through the django admin interface.
+* Federations have a field ``Editor users`` that allow selected users to edit
+  the federation and its entities.
+* Entities have a field ``Editor users`` too, here we can select which users
+  can edit the entity.
+* Anonymous users can read all data, but they can't edit anything.
 
 
 Creating federations
 ********************
 
-When you go to add a new federation, a metadata xml file or a url pointing to
-this metadata file is not required. Federation name is required too.
+When you are going to add a new federation, its name is required, but a
+metadata xml file, or a url pointing to such file, is not.
 
-If metadata file has ID attribute on his root, then can put in File ID field.
-If you remove his value, then file will be processed when save federation.
+If the metadata file has an ``ID`` attribute on his root, then it will be
+stored in the *File ID* field. If you remove its value, then the metadata file
+will be processed again when you save the federation.
 
-If metadata url is set, when federation is save, metadata url file will be
-fetched and verified his checksum with present metadata xml file if it exists.
+If *metadata url* is set, when the federation is saved, the file pointed by
+this url will be fetched and its checksum verified against present metadata xml
+file if any. If there was a previously stored file, and the checksum doesn't
+match, the new file will be processed.
 
-If metadata file is present, it will be parsed and creating on linking entities
-if they exists to the created federation.
+The processing of metadata files consists on creating entities and link them
+to their corresponding federations.
 
 Creating entities
 *****************
 
 You can add new entities from Federation view.
 
-One entity can has his metadata file or url pointing to his metadata file.
+As well as federations, entities can have their own metadata file, or a url
+pointing to such file.
 
-EntityID is required
+*EntityID* is a required field.
