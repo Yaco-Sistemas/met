@@ -21,3 +21,18 @@ div.controls ul {
 .form-search input {
   width: 400px;
 }
+
+.controls label {
+    display: inline;
+}
+
+div.controls input[type=text] {
+    width: 350px;
+}
+
+div.controls ul {
+    overflow: auto;
+    overflow-x: hidden;
+    width: 350px;
+    max-height: 150px;
+}
