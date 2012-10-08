@@ -7,6 +7,14 @@ from met.metadataparser.models import Federation, Entity
 
 class FederationForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(FederationForm, self).__init__(*args, **kwargs)
+        editor_users_choices = self.fields['editor_users'].widget.choices
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(
+                                                choices=editor_users_choices)
+        self.fields['editor_users'].help_text = _("This users can edit this "
+                                                 "federation and his entities")
+
     def clean(self):
         cleaned_data = super(FederationForm, self).clean()
         file_url = cleaned_data.get("file_url")
@@ -28,6 +36,11 @@ class EntityForm(forms.ModelForm):
         self.fields['federations'].widget = CheckboxSelectMultiple(
                                                 choices=federations_choices)
         self.fields['federations'].help_text = ''
+        editor_users_choices = self.fields['editor_users'].widget.choices
+        self.fields['editor_users'].widget = CheckboxSelectMultiple(
+                                                choices=editor_users_choices)
+        self.fields['editor_users'].help_text = _("This users can edit only "
+                                                  "this entity")
 
     def clean(self):
         cleaned_data = super(EntityForm, self).clean()
