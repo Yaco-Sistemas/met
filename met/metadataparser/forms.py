@@ -42,16 +42,16 @@ class EntityForm(forms.ModelForm):
         self.fields['editor_users'].help_text = _("This users can edit only "
                                                   "this entity")
 
-    def clean(self):
-        cleaned_data = super(EntityForm, self).clean()
-        file_url = cleaned_data.get("file_url")
-        file = cleaned_data.get("file")
-        federations = cleaned_data.get("federations")
-        if not (file or file_url or federations):
-            raise forms.ValidationError(_(u"Please, set a file, url or "
-                                       "federation to get which has entity "
-                                       "definition in his url metadata info."))
-        return cleaned_data
+    #def clean(self):
+    #    cleaned_data = super(EntityForm, self).clean()
+    #    file_url = cleaned_data.get("file_url")
+    #    file = cleaned_data.get("file")
+    #    federations = cleaned_data.get("federations")
+    #    if not (file or file_url or federations):
+    #        raise forms.ValidationError(_(u"Please, set a file, url or "
+    #                                   "federation to get which has entity "
+    #                                   "definition in his url metadata info."))
+    #    return cleaned_data
 
     class Meta:
         model = Entity
