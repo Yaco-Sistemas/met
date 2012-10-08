@@ -16,9 +16,9 @@
 
 {% block content %}
 {% if federation.url %}
-  <a href="{{ federation.url }}">{% trans "Federation external website" %}
+<p><a href="{{ federation.url }}">{% trans "Federation external website" %}</a></p>
 {% endif %}
-<a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Federation metadata file" %}</a>
+<p><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Federation metadata file" %}</a></p>
 
 <div class="tabbable">
 <ul class="nav nav-tabs">
