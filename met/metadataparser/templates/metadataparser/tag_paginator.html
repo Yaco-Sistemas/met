@@ -1,4 +1,5 @@
 {% load i18n %}
+{% if objs.has_other_pages %}
 <div class="pagination">
     <ul>
     {% if objs.has_previous %}
@@ -22,3 +23,4 @@
     {% endif %}
     </ul>
 </div>
+{% endif %}

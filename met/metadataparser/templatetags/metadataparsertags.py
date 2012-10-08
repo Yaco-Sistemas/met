@@ -64,7 +64,7 @@ def federations_summary(context, federations=None, page=1):
 
 
 @register.inclusion_tag('metadataparser/tag_paginator.html')
-def paginator(objects):
+def paginator(objects, append_url=''):
     ratio = 2
     pages = objects.paginator.num_pages
     cpage = objects.number
@@ -78,6 +78,7 @@ def paginator(objects):
         pmax = objects.paginator.num_pages
     pages = range(pmin, pmax + 1)
     return {'objs': objects,
+            'append_url': append_url,
             'pages': pages}
 
 

@@ -13,6 +13,6 @@
   </tbody>
 </table>
 {% else %}
-   {% trans "There isn't entities with this filter" %}
+  <p>{% trans "There isn't entities with this filter" %}</p>
 {% endif %}
-{% paginator entities %}
+{% paginator entities append_url %}

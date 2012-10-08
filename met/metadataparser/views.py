@@ -224,7 +224,8 @@ def generic_list(request, objects, format, fields, headers, title, filename):
         objs_page = paginator.page(paginator.num_pages)
 
     return render_to_response('metadataparser/generic_list.html',
-                              {'objects': objs_page,
+                              {'objs_page': objs_page,
+                               'objects': objects,
                                'headers': headers,
                                'fields': fields,
                                'title': title,

@@ -3,13 +3,13 @@
 
 {% block appendheader %}
 
-<h2>{{ title }}</h2>
+<h2>{{ title }} ({{ objects|length }})</h2>
 {% endblock %}
 
 {% block content %}
 
 {% include "metadataparser/inc.export-menu.html" %}
-{% paginator objects %}
+{% paginator objs_page %}
 <table class="table table-bordered">
 <thead>
   {% for column in headers %}
@@ -17,7 +17,7 @@
   {% endfor %}
 </thead>
 <tbody>
-  {% for obj in objects %}
+  {% for obj in objs_page %}
     <tr>
       {% for field in fields %}
       <td>{% get_property obj field %}</td>
@@ -28,7 +28,7 @@
 </table>
 
 {% include "metadataparser/inc.export-menu.html" %}
-{% paginator objects %}
+{% paginator objs_page %}
 
 
 {% endblock %}
