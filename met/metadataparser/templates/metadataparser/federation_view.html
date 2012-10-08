@@ -2,7 +2,13 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-<h2>{% trans "Federation" %} {{ federation }}</h2>
+<h2>
+  {% if federation.url %}
+  <a href="{{ federation.url }}">{{ federation }}</a>
+  {% else %}
+  {{ federation }}
+  {% endif %}
+</h2>
 
 {% canedit federation %}
 <div class="btn-group pull-right">
@@ -13,14 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<dl class="dl-horizontal">
-  <dt>{% trans "Organization" %}</dt>
-  <dd><a href="{{ federation.organization_link }}">{{ federation }}</a></dd>
-
-  <dt>{% trans "Metadata file" %}</dt>
-  <dd><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "metadata file" %}</a></dd>
-</dl>
-
+<a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Metadata file" %}</a>
 
 <div class="tabbable">
 <ul class="nav nav-tabs">
