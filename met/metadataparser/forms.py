@@ -15,14 +15,14 @@ class FederationForm(forms.ModelForm):
         self.fields['editor_users'].help_text = _("This users can edit this "
                                                  "federation and his entities")
 
-    def clean(self):
-        cleaned_data = super(FederationForm, self).clean()
-        file_url = cleaned_data.get("file_url")
-        file = cleaned_data.get("file")
-        if not (file or file_url):
-            raise forms.ValidationError(_(u"Please, set a file or url to get "
-                                       "metadata info."))
-        return cleaned_data
+    #def clean(self):
+    #    cleaned_data = super(FederationForm, self).clean()
+    #    file_url = cleaned_data.get("file_url")
+    #    file = cleaned_data.get("file")
+    #    if not (file or file_url):
+    #        raise forms.ValidationError(_(u"Please, set a file or url to get "
+    #                                   "metadata info."))
+    #    return cleaned_data
 
     class Meta:
         model = Federation
