@@ -36,6 +36,17 @@
   {% endif %}
 </dl>
 
+
+<div class="btn-group pull-right">
+  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+      {% trans "Export" %}
+      <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a href="{% url search_service_export "csv" %}?entityid={{ entity.entityid }}">{% trans "csv" %}</a></li>
+    <li><a href="{% url search_service_export "json" %}?entityid={{ entity.entityid }}">{% trans "json" %}</a></li>
+  </ul>
+</div>
 <h3>{% trans "Federations" %}</h3>
 <table class="table table-bordered">
 <thead>
@@ -51,16 +62,6 @@
   {% endfor %}
 </tbody>
 </table>
-<div class="btn-group dropup">
-  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-      {% trans "Export" %}
-      <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li><a href="{% url search_service_export "csv" %}?entityid={{ entity.entityid }}">{% trans "csv" %}</a></li>
-    <li><a href="{% url search_service_export "json" %}?entityid={{ entity.entityid }}">{% trans "json" %}</a></li>
-  </ul>
-</div>
 {% endif %}
 
 {% endblock %}

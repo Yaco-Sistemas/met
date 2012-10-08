@@ -197,12 +197,15 @@ def generic_list(request, objects, format, fields, headers, title, filename):
     model = objects.model
     headers = []
     for fieldname in fields:
-        try:
-            field = model._meta.get_field(fieldname)
-            headers.append(field.verbose_name)
-        except FieldDoesNotExist:
-            if hasattr(objects[0], fieldname):
-                headers.append(fieldname.capitalize())
+        if fieldname:
+            try:
+                field = model._meta.get_field(fieldname)
+                headers.append(field.verbose_name)
+            except FieldDoesNotExist:
+                if hasattr(objects[0], fieldname):
+                    headers.append(fieldname.capitalize())
+        else:
+            headers.append(unicode(model._meta.verbose_name))
 
     if format:
         return export_query_set(format, objects, filename, fields)
