@@ -1,7 +1,7 @@
 {% load i18n metadataparsertags %}
 {% if federations %}
 
-{% if user.is_authenticated %}
+{% if user.is_superuser %}
 <a class="btn pull-right" href="{% url federation_add %}">{% trans "Add federation" %}</a>
 {% endif %}
 <table class="table .table-bordered">
