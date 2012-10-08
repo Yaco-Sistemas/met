@@ -40,45 +40,45 @@ postgresql :
 Project deployment
 ******************
 
-* Create a user met
+* Create a user ``met`` in the system:
 
   .. code-block:: bash
 
       sudo adduser met
 
-* Add www-data into met group
+* Add ``www-data`` into ``met`` group:
 
   .. code-block:: bash
 
       sudo adduser www-data met
 
-* change to met user:
+* Change to ``met`` user:
 
   .. code-block:: bash
 
       sudo su - met
 
-* create virtualenv and load it:
+* Create a virtualenv and load it:
 
   .. code-block:: bash
 
       virtualenv met-venv
       source met-venv/bin/activate
 
-* clone git repository:
+* Clone git repository:
 
   .. code-block:: bash
 
       git clone git://github.com/Yaco-Sistemas/met.git
 
-* deploy met egg:
+* Deploy met egg:
 
   .. code-block:: bash
 
       cd met
       python setup.py develop
 
-* Configure local_settings and initialize met database (create models)
+* Configure ``local_settings`` and initialize met database (create models):
 
   .. code-block:: bash
 
@@ -89,8 +89,8 @@ Project deployment
 Apache configuration
 ********************
 
-
-This is a basic template which use the home of met user
+This is a basic template that assumes the project was deployed into ``met``
+user's home.
 
 .. code-block:: text
 
@@ -118,7 +118,7 @@ This is a basic template which use the home of met user
 Initialize media directory
 **************************
 
-Initialize media directory with correct permissions
+Initialize media directory with proper permissions:
 
 .. code-block:: bash
 
@@ -130,13 +130,13 @@ Initialize media directory with correct permissions
 Saml2 Authentication integration
 ********************************
 
-The example local_settings has a generic configuration to integrate with SAML2
-Authentication.
+The ``local_settings`` example has a generic configuration of SAML2
+Authentication integration.
 
-You need to change SAML_CONFIG according to your organization information.
+You need to change ``SAML_CONFIG`` according to your organization information.
 
 For testing purposes, you should create your own self-signed certificates. For
-other purposes buy them:
+other purposes you should buy them. How to create the certificates:
 
 * Follow the first five steps of this guide:
   http://www.akadia.com/services/ssh_test_certificate.html
@@ -152,5 +152,5 @@ other purposes buy them:
    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
 
-You need to get your IDP metadata and put in saml/remote_metadata.xml or
-another path you set in SAML_CONFIG.metatadata.local setting
+You need to put your IDP metadata in ``saml/remote_metadata.xml`` or, if you
+modified the ``SAML_CONFIG.metatadata.local`` setting, in the proper path.
