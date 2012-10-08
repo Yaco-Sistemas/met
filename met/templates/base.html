@@ -17,11 +17,17 @@
       <div class="navbar row">
         <div class="navbar-inner">
           <a class="brand" href="{% url index %}">{% trans "Metadata Explorer Tool" %}</a>
+          <ul class="nav pull-right">
           {% if request.user.is_authenticated %}
-            <a class="navbar-text pull-right" href="{{ portal_settings.LOGOUT_URL }}?next={{ request.path }}">{{ request.user }} - {% trans "Logout" %}</a>
+            <li class="divider-vertical"></li>
+            <li><p class="navbar-text">{{ request.user }}</p></li>
+            <li class="divider-vertical"></li>
+            <li><p class="navbar-text"><a href="{{ portal_settings.LOGOUT_URL }}?next={{ request.path }}">{% trans "Logout" %}</a></p></li>
           {% else %}
-            <a class="navbar-text pull-right" href="{{ portal_settings.LOGIN_URL }}?next={{ request.path }}">{% trans "login" %}</a>
+            <li class="divider-vertical"></li>
+            <li><a href="{{ portal_settings.LOGIN_URL }}?next={{ request.path }}">{% trans "login" %}</a></li>
           {% endif %}
+          </ul>
         </div>
       </div>
       <div class="row">
@@ -44,7 +50,6 @@
       </div>
     </div>
 
-    <hr/>
     <footer class="container well">
       <p><a href="http://www.terena.org/">&copy; Copyright 2012 Terena</a><p>
       <p><a href="http://github.com/Yaco-Sistemas/met">Get the code at Github</a><p>
