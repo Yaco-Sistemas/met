@@ -21,12 +21,23 @@ def export_csv(qs, filename, fields=None):
         for field in model._meta.fields:
             headers.append(field.name)
         fields = headers
+    _headers = []
+    for header in headers:
+        if header:
+            _headers.append(header)
+        else:
+            _headers.append(unicode(model._meta.verbose_name))
+
+    headers = _headers
+
     writer.writerow(headers)
     # Write data to CSV file
     for obj in qs:
         row = []
-        for field in headers:
-            if field in headers:
+        for field in fields:
+            if field == '':
+                val = unicode(obj)
+            else:
                 val = getattr(obj, field)
                 if callable(val):
                     val = val()
@@ -35,7 +46,7 @@ def export_csv(qs, filename, fields=None):
                 # work around csv unicode limitation
                 elif type(val) == unicode:
                     val = val.encode("utf-8")
-                row.append(val)
+            row.append(val)
         writer.writerow(row)
     # Return CSV file to browser as download
     return response
@@ -54,14 +65,18 @@ def export_json(qs, filename, fields=None):
     for obj in qs:
         item = {}
         for field in fields:
-            val = getattr(obj, field)
-            if callable(val):
-                val = val()
-            elif getattr(val, 'all', None):
-                val = ', '.join([unicode(i) for i in val.all()])
-            # work around csv unicode limitation
-            elif type(val) == unicode:
-                val = val.encode("utf-8")
+            if field == '':
+                field = unicode(obj._meta.verbose_name)
+                val = unicode(obj)
+            else:
+                val = getattr(obj, field)
+                if callable(val):
+                    val = val()
+                elif getattr(val, 'all', None):
+                    val = [unicode(i) for i in val.all()]
+                # work around csv unicode limitation
+                elif type(val) == unicode:
+                    val = val.encode("utf-8")
             item[field] = val
         objs.append(item)
     # Return JS file to browser as download
@@ -87,24 +102,25 @@ def export_xml(qs, filename, fields=None):
         item = xml.createElement(model._meta.object_name)
         item.setAttribute("id", unicode(obj))
         for field in fields:
-            val = getattr(obj, field)
-            if getattr(val, 'all', None):
-                for v in val.all():
+            if field != '':
+                val = getattr(obj, field)
+                if getattr(val, 'all', None):
+                    for v in val.all():
+                        element = xml.createElement(field)
+                        xmlval = xml.createTextNode(unicode(v))
+                        element.appendChild(xmlval)
+                        item.appendChild(element)
+                else:
+                    if callable(val):
+                        val = val()
+                    # work around csv unicode limitation
+                    elif type(val) == unicode:
+                        val = val.encode("utf-8")
+
                     element = xml.createElement(field)
-                    xmlval = xml.createTextNode(unicode(v))
+                    xmlval = xml.createTextNode(val)
                     element.appendChild(xmlval)
                     item.appendChild(element)
-            else:
-                if callable(val):
-                    val = val()
-                # work around csv unicode limitation
-                elif type(val) == unicode:
-                    val = val.encode("utf-8")
-
-                element = xml.createElement(field)
-                xmlval = xml.createTextNode(val)
-                element.appendChild(xmlval)
-                item.appendChild(element)
         root.appendChild(item)
     # Return xml file to browser as download
     response = HttpResponse(xml.toxml(), mimetype='application/xml')
@@ -114,6 +130,7 @@ def export_xml(qs, filename, fields=None):
 
 
 export_modes = {
+            'csv': export_csv,
             'json': export_json,
             'xml': export_xml,
         }

@@ -1,7 +1,7 @@
 from django import template
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
-from met.metadataparser.models import Federation
+from met.metadataparser.models import Base, Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
 from django.template.base import Node, TemplateSyntaxError
 
@@ -104,11 +104,16 @@ def l10n_property(context, prop):
 def get_property(obj, prop=None):
     uprop = unicode(prop)
     if not uprop:
-        return unicode(obj)
+        return '<a href="%(link)s">%(name)s</a>' % {"link": obj.get_absolute_url(),
+                                                    "name": unicode(obj),
+                                                    }
     if isinstance(obj, dict):
         return obj.get(prop, None)
     if getattr(getattr(obj, uprop, None), 'all', None):
-        return ', '.join([unicode(item) for item in getattr(obj, uprop).all()])
+
+        return '. '.join(['<a href="%(link)s">%(name)s</a>' % {"link": item.get_absolute_url(),
+                                                    "name": unicode(item)}
+                          for item in getattr(obj, uprop).all()])
     if isinstance(getattr(obj, uprop, ''), list):
         return ', '.join(getattr(obj, uprop, []))
     return getattr(obj, uprop, '')

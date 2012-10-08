@@ -4,6 +4,7 @@ from urlparse import urlsplit
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
@@ -132,6 +133,9 @@ class Federation(Base):
                 except Entity.DoesNotExist:
                     entity = self.entity_set.create(entityid=m_id)
 
+    def get_absolute_url(self):
+        return reverse('federation_view', args=[self.id])
+
 
 class EntityQuerySet(QuerySet):
     def iterator(self):
@@ -239,6 +243,9 @@ class Entity(Base):
         for federation in self.federations.all():
             if federation.can_edit(user):
                 return True
+
+    def get_absolute_url(self):
+        return reverse('entity_view', args=[self.id])
 
 
 class EntityLogo(models.Model):

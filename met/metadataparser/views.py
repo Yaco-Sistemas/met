@@ -232,14 +232,14 @@ def generic_list(request, objects, format, fields, headers, title, filename):
 def edugain_services(request):
     entities = Entity.objects.filter(federations__part_of_edugain=True)
     return generic_list(request, entities, request.GET.get('format', None),
-                        ('entityid', 'federations',),
-                        ('entityid', 'federations',),
+                        ('', 'federations',),
+                        ('', 'federations',),
                         _(u'Edugain services'), 'edugain-services')
 
 
 def edugain_federations(request):
     federations = Federation.objects.filter(part_of_edugain=True)
     return generic_list(request, federations, request.GET.get('format', None),
-                        ('name', 'url',),
-                        ('name', 'url',),
+                        ('', 'url',),
+                        ('', 'url',),
                         _(u'Edugain federations'), 'edugain-federations')
