@@ -3,11 +3,7 @@
 
 {% block appendheader %}
 <h2>
-  {% if federation.url %}
-  <a href="{{ federation.url }}">{{ federation }}</a>
-  {% else %}
   {{ federation }}
-  {% endif %}
 </h2>
 
 {% canedit federation %}
@@ -19,7 +15,10 @@
 {% endblock %}
 
 {% block content %}
-<a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Metadata file" %}</a>
+{% if federation.url %}
+  <a href="{{ federation.url }}">{% trans "Federation external website" %}
+{% endif %}
+<a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Federation metadata file" %}</a>
 
 <div class="tabbable">
 <ul class="nav nav-tabs">
