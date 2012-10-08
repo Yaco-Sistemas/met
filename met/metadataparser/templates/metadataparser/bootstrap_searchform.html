@@ -13,9 +13,8 @@
 {{ hidden }}
 {% endfor %}
 {% for field in form.visible_fields %}
-    <input name="{{ field.name }}"
-          {% if field.value %}value={{ field.value }}{% endif %}/
-          type="text" maxlength="{{ field.max_length }}">
+    <input name="{{ field.name }}" type="text"
+          {% if field.value %}value="{{ field.value }}"{% endif %}/>
     <button class="btn" type="submit">{% trans "Search" %}</button>
     <p class="help-text"> {{ field.help_text }} </p>
     {% if field.errors %}

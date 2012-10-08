@@ -179,7 +179,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'met.portal.context.portal_settings',
+    'met.portal.context_processors.portal_settings',
+    'met.metadataparser.context_processors.nav_search_form',
 )
 
 AUTHENTICATION_BACKENDS = (

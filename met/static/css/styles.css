@@ -17,3 +17,7 @@ div.controls ul {
     list-style: none outside none;
     margin-left: 0;
 }
+
+.form-search input {
+  width: 400px;
+}
