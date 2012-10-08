@@ -11,6 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   install
+   usermanual
+
 
 Indices and tables
 ==================
