@@ -29,7 +29,7 @@ class Base(models.Model):
                                help_text=_(u'Url to fetch metadata file'))
     file = models.FileField(upload_to='metadata', blank=True, null=True,
                             verbose_name=_(u'metadata xml file'),
-                            help_text=_("if url is set metadata url will be"
+                            help_text=_("if url is set metadata url will be "
                                         "fetched and replace file value"))
 
     file_id = models.CharField(blank=True, null=True, max_length=100,
