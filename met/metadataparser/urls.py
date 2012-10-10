@@ -2,7 +2,6 @@ from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns('met.metadataparser.views',
-    url(r'^federation/$', 'federations_list', name='federations_list'),
     url(r'^federation/add/$', 'federation_edit', name='federation_add'),
     url(r'^federation/(?P<federation_id>\d+)/edit/$', 'federation_edit',
         name='federation_edit'),
@@ -22,7 +21,4 @@ urlpatterns = patterns('met.metadataparser.views',
     url(r'^search_service/(?P<mode>\w+)/$', 'search_service_export',
         name='search_service_export'),
 
-    url(r'^edugain_services/$', 'edugain_services', name='edugain_services'),
-    url(r'^edugain_federations/$', 'edugain_federations',
-        name='edugain_federations'),
     )

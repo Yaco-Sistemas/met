@@ -9,32 +9,37 @@
 
 {% bootstrap_searchform searchform %}
 
-{% if entity %}
+{% trans "total results" %} {{ object_list|length }}
+{% if object_list %}
 
-<dl class="dl">
-
-  <a href={% url entity_view entity.id %}>{% trans "Go to full entity view" %}</a>
-
-  <dt>{% trans "Name" %}</dt>
-  <dd>{{ entity }}</dd>
-
-  <dt>{% trans "EntityID" %}</dt>
-  <dd>{{ entity.entityid }}</dd>
-
-  <dt>{% trans "Entity Type" %}</dt>
-  <dd>{{ entity.types|join:", " }}</dd>
-
-  {% if entity.organization %}
-  <dt>{% trans "Organization" %}</dt>
-  <dd>
-    <ul class="unstyled">
-    {% for organization in entity.organization %}
-    <li><a href="{{ organization.URL }}">{{ organization.displayName }}</a></li>
+<table class="table table-stripped">
+  <thead>
+    <tr>
+      <th>EntityID</th>
+      <th>Type</th>
+      <th>Federations</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entity in object_list %}
+  <tr>
+    <td>
+      <a title="{{ entity|default:entity.entityid }}"
+         href="{{ entity.get_absolute_url }}">{{ entity|default:entity.entityid|wrap:50 }}</a>
+    </td>
+    <td>
+      {{ entity.types|display_etype }}
+    </td>
+    <td>
+    {% for federation in entity.federations.all %}
+    <a href="{{ federation.get_absolute_url }}">{{ federation }}</a> {% if not forloop.last %}|{% endif %}
     {% endfor %}
-  </ul>
-  </dd>
-  {% endif %}
-</dl>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
 
 
 <div class="btn-group pull-right">
@@ -47,21 +52,7 @@
     <li><a href="{% url search_service_export "json" %}?entityid={{ entity.entityid }}">{% trans "json" %}</a></li>
   </ul>
 </div>
-<h3>{% trans "Federations" %}</h3>
-<table class="table table-bordered">
-<thead>
-  <th>{% trans "Name" %}</th>
-  <th>{% trans "Url" %}</th>
-</thead>
-<tbody>
-  {% for federation in entity.federations.all %}
-  <tr>
-    <td>{{ federation }}</td>
-    <td>{{ federation.url|default:"" }}</td>
-  </tr>
-  {% endfor %}
-</tbody>
-</table>
+
 {% endif %}
 
 {% endblock %}

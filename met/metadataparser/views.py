@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import ListView, View
 
 
 from met.metadataparser.decorators import user_can_edit
@@ -17,14 +18,6 @@ from met.metadataparser.forms import (FederationForm, EntityForm,
 
 from met.metadataparser.utils import export_query_set
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
-
-
-def federations_list(request):
-    federations = Federation.objects.all()
-
-    return render_to_response('metadataparser/federations_list.html', {
-           'federations': federations,
-           }, context_instance=RequestContext(request))
 
 
 def federation_view(request, federation_id):
@@ -62,9 +55,9 @@ def federation_edit(request, federation_id=None):
     if request.method == 'POST':
         form = FederationForm(request.POST, request.FILES, instance=federation)
         if form.is_valid():
+            form.save()
             if not federation:
                 form.instance.editor_users.add(request.user)
-            form.save()
             if 'file' in form.changed_data or 'file_url' in form.changed_data:
                 form.instance.process_metadata()
                 form.instance.process_metadata_entities()
@@ -88,7 +81,7 @@ def federation_edit(request, federation_id=None):
                               context_instance=RequestContext(request))
 
 
-@login_required
+@user_can_edit
 def federation_delete(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
     messages.success(request,
@@ -106,7 +99,7 @@ def entity_view(request, entity_id):
             }, context_instance=RequestContext(request))
 
 
-@login_required
+@user_can_edit
 def entity_edit(request, federation_id=None, entity_id=None):
     entity = None
     federation = None
@@ -146,7 +139,7 @@ def entity_edit(request, federation_id=None, entity_id=None):
                               context_instance=RequestContext(request))
 
 
-@login_required
+@user_can_edit
 def entity_delete(request, federation_id, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
     messages.success(request,
@@ -158,13 +151,13 @@ def entity_delete(request, federation_id, entity_id):
 
 ## Querys
 def search_service(request):
-    entity = None
     if request.method == 'GET' and 'entityid' in request.GET:
         form = ServiceSearchForm(request.GET)
         if form.is_valid():
             entityid = form.cleaned_data['entityid']
+            entityid = entityid.strip()
             try:
-                entity = Entity.objects.get(entityid=entityid)
+                objects = Entity.objects.filter(entityid__icontains=entityid)
             except Entity.DoesNotExist:
                 messages.info(request, _(u"Can't found %(entityid)s service"
                                          % {'entityid': entityid}))
@@ -173,7 +166,7 @@ def search_service(request):
         form = ServiceSearchForm()
     return render_to_response('metadataparser/service_search.html',
         {'searchform': form,
-         'entity': entity,
+         'object_list': objects,
         }, context_instance=RequestContext(request))
 
 
@@ -233,17 +226,3 @@ def generic_list(request, objects, format, fields, headers, title, filename):
                               context_instance=RequestContext(request))
 
 
-def edugain_services(request):
-    entities = Entity.objects.filter(federations__part_of_edugain=True)
-    return generic_list(request, entities, request.GET.get('format', None),
-                        ('', 'federations',),
-                        ('', 'federations',),
-                        _(u'Edugain services'), 'edugain-services')
-
-
-def edugain_federations(request):
-    federations = Federation.objects.filter(part_of_edugain=True)
-    return generic_list(request, federations, request.GET.get('format', None),
-                        ('', 'url',),
-                        ('', 'url',),
-                        _(u'Edugain federations'), 'edugain-federations')

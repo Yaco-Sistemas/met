@@ -145,6 +145,14 @@ def display_etype(value, separator=', '):
             return value
 
 
+@register.filter(name='wrap')
+def wrap(value, length):
+    value = unicode(value)
+    if len(value) > length:
+        return "%s..." % value[:length]
+    return value
+
+
 class CanEdit(Node):
     child_nodelists = ('nodelist')
 
