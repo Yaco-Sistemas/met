@@ -18,11 +18,13 @@ XML_NAMESPACE = NAMESPACES['xml']
 XMLDSIG_NAMESPACE = NAMESPACES['ds']
 MDUI_NAMESPACE = NAMESPACES['mdui']
 
-DESCRIPTOR_TYPES = ('RoleDescriptor', 'IDPSSODescriptor',
-                    'SPSSODescriptor', 'AuthnAuthorityDescriptor',
-                    'AttributeAuthorityDescriptor', 'PDPDescriptor',
-                    'AffiliationDescriptor',)
+#DESCRIPTOR_TYPES = ('RoleDescriptor', 'IDPSSODescriptor',
+#                    'SPSSODescriptor', 'AuthnAuthorityDescriptor',
+#                    'AttributeAuthorityDescriptor', 'PDPDescriptor',
+#                    'AffiliationDescriptor',)
 
+
+DESCRIPTOR_TYPES = ('IDPSSODescriptor', 'SPSSODescriptor',)
 DESCRIPTOR_TYPES_DISPLAY = {}
 for item in DESCRIPTOR_TYPES:
     DESCRIPTOR_TYPES_DISPLAY[item] = item.replace('Descriptor', '')
