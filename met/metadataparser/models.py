@@ -171,6 +171,12 @@ class EntityManager(models.Manager):
 
 class Entity(Base):
 
+    READABLE_PROTOCOLS = {
+        'urn:oasis:names:tc:SAML:1.1:protocol': 'SAML 1.1',
+        'urn:oasis:names:tc:SAML:2.0:protocol': 'SAML 2.0',
+        'urn:mace:shibboleth:1.0': 'Shiboleth 1.0',
+    }
+
     entityid = models.CharField(blank=False, max_length=200, unique=True,
                                 verbose_name=_(u'EntityID'), db_index=True)
     federations = models.ManyToManyField(Federation,
@@ -185,11 +191,25 @@ class Entity(Base):
 
     @property
     def name(self):
-        return self._get_property('displayName')
+        return self._get_property('displayname')
+
+    @property
+    def description(self):
+        return self._get_property('description')
 
     @property
     def types(self):
         return self._get_property('entity_types')
+
+    @property
+    def protocols(self):
+        return self._get_property('protocols')
+
+    def display_protocols(self):
+        protocols = []
+        for proto in self._get_property('protocols'):
+            protocols.append(self.READABLE_PROTOCOLS.get(proto, proto))
+        return protocols
 
     @property
     def logos(self):

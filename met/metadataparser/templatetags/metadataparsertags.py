@@ -1,9 +1,8 @@
 from django import template
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.conf import settings
-from met.metadataparser.models import Base, Federation
+from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
 from django.template.base import Node, TemplateSyntaxError
+from urllib import urlencode
 
 register = template.Library()
 
@@ -20,66 +19,47 @@ def bootstrap_searchform(form):
     return {'form': form}
 
 
-@register.inclusion_tag('metadataparser/tag_entities_list.html', takes_context=True)
-def federation_entities_list(context, federation, entities, page, entity_type=None):
-
-    paginator = Paginator(entities, getattr(settings, 'PAGE_LENGTH', 25))
-
-    try:
-        entities_page = paginator.page(page)
-    except PageNotAnInteger:
-        entities_page = paginator.page(1)
-    except EmptyPage:
-        entities_page = paginator.page(paginator.num_pages)
-
-    if entity_type and entity_type != 'All':
-        append_url = '&entity_type=%s' % entity_type
-    else:
-        append_url = ''
-
-    return {'federation': federation,
-            'entity_type': entity_type,
-            'append_url': append_url,
-            'user': context.get('user', None),
-            'entities': entities_page}
-
-
 @register.inclusion_tag('metadataparser/federations_summary_tag.html', takes_context=True)
-def federations_summary(context, federations=None, page=1):
+def federations_summary(context, federations=None):
     if not federations:
         federations = Federation.objects.all()
 
-    paginator = Paginator(federations, getattr(settings, 'PAGE_LENGTH', 25))
-
-    try:
-        federations_page = paginator.page(page)
-    except PageNotAnInteger:
-        federations_page = paginator.page(1)
-    except EmptyPage:
-        federations_page = paginator.page(paginator.num_pages)
-
-    return {'federations': federations_page,
+    return {'federations': federations,
             'user': context.get('user', None),
             'entity_types': DESCRIPTOR_TYPES}
 
 
-@register.inclusion_tag('metadataparser/tag_paginator.html')
-def paginator(objects, append_url=''):
-    ratio = 2
-    pages = objects.paginator.num_pages
-    cpage = objects.number
-    if (cpage - ratio) > 1:
-        pmin = cpage - ratio
-    else:
-        pmin = 1
-    if (cpage + ratio) < pages:
-        pmax = cpage + ratio
-    else:
-        pmax = objects.paginator.num_pages
-    pages = range(pmin, pmax + 1)
-    return {'objs': objects,
-            'append_url': append_url,
-            'pages': pages}
+@register.inclusion_tag('metadataparser/tag_entity_filters.html', takes_context=True)
+def entity_filters(context, entities):
+    entity_types = ('All', ) + DESCRIPTOR_TYPES
+    request = context.get('request')
+    entity_type = request.GET.get('entity_type', '')
+    rquery = request.GET.copy()
+    for filter in ('entity_type', 'page'):
+        if filter in rquery:
+            rquery.pop(filter)
+    if not entity_type:
+        entity_type = 'All'
+    query = urlencode(rquery)
+    filter_base_path = request.path
+    return {'filter_base_path': filter_base_path,
+            'otherparams': query,
+            'entity_types': entity_types,
+            'entity_type': entity_type,
+            'entities': entities}
+
+
+@register.simple_tag()
+def entity_filter_url(base_path, filter, otherparams=None):
+    url = base_path
+    if filter != 'All':
+        url += '?entity_type=%s' % filter
+        if otherparams:
+            url += '&%s' % otherparams
+    elif otherparams:
+        url += '?%s' % otherparams
+
+    return url
 
 
 @register.simple_tag()

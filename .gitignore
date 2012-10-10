@@ -8,3 +8,5 @@ met/media/
 saml2/certs
 saml2/remote_metadata.xml
 doc/build
+dist/
+build/

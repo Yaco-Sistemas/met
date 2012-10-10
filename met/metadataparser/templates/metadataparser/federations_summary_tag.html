@@ -4,7 +4,7 @@
 {% if user.is_superuser %}
 <a class="btn pull-right" href="{% url federation_add %}">{% trans "Add federation" %}</a>
 {% endif %}
-<table class="table .table-bordered">
+<table class="table table-striped">
   <thead>
     <tr>
       <th>{% trans "Federation Name" %}</th>

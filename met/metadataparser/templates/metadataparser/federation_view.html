@@ -18,23 +18,10 @@
 {% if federation.url %}
 <p><a href="{{ federation.url }}">{% trans "Federation external website" %}</a></p>
 {% endif %}
-<p><a href="{{ MEDIA_URL }}{{ federation.file }}">{% trans "Federation metadata file" %}</a></p>
 
-<div class="tabbable">
-<ul class="nav nav-tabs">
-{% for etype in entity_types %}
-  {% url federation_view federation.id as federation_url %}
-  <li {% if etype == entity_type %}class="active"{% endif %}>
-  <a href="{{ federation_url }}{% if etype != 'All' %}?entity_type={{ etype }}{% endif %}">
-      {{ etype|display_etype }} ({% entities_count federation etype %})</a>
-  </li>
-{% endfor %}
-</ul>
-<div class="tab-content">
-  <h3>{{ etype|display_etype }}</h3>
-{% federation_entities_list federation entities page entity_type %}
-</div>
-
-</div>
+{% with entities as object_list %}
+{% url federation_view federation.id as filter_base_url %}
+{% include "metadataparser/include.entity_list.html" %}
+{% endwith %}
 
 {% endblock %}

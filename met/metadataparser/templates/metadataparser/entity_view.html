@@ -2,7 +2,11 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-<h2>{% trans "Entity" %} {{ entity }}</h2>
+{% if entity.name %}
+  <h2>{% l10n_property entity.name %}</h2>
+{% else %}
+  <h2>{{ entity }}</h2>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -11,7 +15,6 @@
   <a class="btn" href="{% url entity_edit entity.id %}">{% trans "edit" %}</a>
 </div>
 {% endcanedit %}
-
 
 {% for logo in entity.logos %}
   {% if logo.external %}
@@ -23,9 +26,9 @@
 
 <dl class="dl-horizontal">
 
-  {% if entity.name %}
-  <dt>{% trans "Name" %}</dt>
-  <dd>{% l10n_property entity.name %}</dd>
+  {% if entity.description %}
+  <dt>{% trans "Description" %}</dt>
+  <dd>{% l10n_property entity.description %}</dd>
   {% endif %}
 
   <dt>{% trans "EntityID" %}</dt>
@@ -33,6 +36,11 @@
 
   <dt>{% trans "Entity Types" %}</dt>
   <dd>{{ entity.types|display_etype }}</dd>
+
+  {% if entity.protocols %}
+  <dt>{% trans "Supported protocols" %}</dt>
+  <dd>{{ entity.display_protocols|join:", " }}</dd>
+  {% endif %}
 
   {% if entity.organization %}
   <dt>{% trans "Organization" %}</dt>

@@ -1,0 +1,60 @@
+{% load i18n metadataparsertags pagination_tags %}
+
+
+{% if enable_entity_filters %}
+{% entity_filters object_list %}
+{% endif %}
+
+<p><strong>{% trans "total results" %}</strong> {{ object_list|length }}</p>
+
+{% if enable_entity_filters %}
+<p class="text-muted">
+{% blocktrans %}
+Remember that one entity can be IDP and SP at the same time, so the addition
+of IDP and SP can be bigger than the number of entities
+{% endblocktrans %}
+</p>
+{% endif %}
+
+{% autopaginate object_list %}
+{% paginate %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>EntityID</th>
+      <th>Type</th>
+      <th>Federations</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entity in object_list %}
+  <tr>
+    <td>
+      <a title="{{ entity|default:entity.entityid }}"
+         href="{{ entity.get_absolute_url }}">{{ entity|default:entity.entityid|wrap:50 }}</a>
+    </td>
+    <td>
+      {{ entity.types|display_etype }}
+    </td>
+    <td>
+    {% for federation in entity.federations.all %}
+    <a href="{{ federation.get_absolute_url }}">{{ federation }}</a> {% if not forloop.last %}|{% endif %}
+    {% endfor %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% paginate %}
+
+
+<div class="btn-group pull-right">
+  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+      {% trans "Export" %}
+      <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a href="{% url search_service_export "csv" %}?entityid={{ entity.entityid }}">{% trans "csv" %}</a></li>
+    <li><a href="{% url search_service_export "json" %}?entityid={{ entity.entityid }}">{% trans "json" %}</a></li>
+  </ul>
+</div>

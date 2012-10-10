@@ -100,6 +100,12 @@ class MetadataParser(object):
         displayName = self.entity_displayname(entity['entityid'])
         if displayName:
             entity['displayname'] = displayName
+        description = self.entity_description(entity['entityid'])
+        if description:
+            entity['description'] = description
+        protocols = self.entity_protocols(entity['entityid'])
+        if protocols:
+            entity['protocols'] = protocols
         Organization = self.entity_organization(entity['entityid'])
         if Organization:
             entity['organization'] = Organization
@@ -135,11 +141,39 @@ class MetadataParser(object):
         return int(self.etree.xpath("count(//md:EntityDescriptor)",
                                 namespaces=NAMESPACES))
 
+    def entity_protocols(self, entityid):
+        raw_protocols = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                         "/md:IDPSSODescriptor"
+                                         "/@protocolSupportEnumeration" % entityid,
+                                 namespaces=NAMESPACES)
+        if raw_protocols:
+            protocols = raw_protocols[0]
+            return protocols.split(' ')
+        return []
+
     def entity_displayname(self, entityid):
         languages = {}
+
         names = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
                                  " //mdui:UIInfo"
-                                 "/mdui:DisplayName" % entityid,
+                                 "//mdui:DisplayName" % entityid,
+                                 namespaces=NAMESPACES)
+
+        for dn_node in names:
+            lang = getlang(dn_node)
+            if lang is None:
+                continue  # the lang attribute is required
+
+            languages[lang] = dn_node.text
+
+        return languages
+
+    def entity_description(self, entityid):
+        languages = {}
+
+        names = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                 " //mdui:UIInfo"
+                                 "//mdui:Description" % entityid,
                                  namespaces=NAMESPACES)
 
         for dn_node in names:
