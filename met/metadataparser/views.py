@@ -31,7 +31,7 @@ def federation_view(request, federation_id):
             {'federation': federation,
              'entity_type': entity_type or 'All',
              'entities': entities,
-             'enable_entity_filters': True,
+             'show_filters': True,
             }, context_instance=RequestContext(request))
 
 
@@ -71,7 +71,7 @@ def federation_edit(request, federation_id=None):
                               context_instance=RequestContext(request))
 
 
-@user_can_edit
+@user_can_edit(Federation)
 def federation_delete(request, federation_id):
     federation = get_object_or_404(Federation, id=federation_id)
     messages.success(request,
@@ -89,7 +89,7 @@ def entity_view(request, entity_id):
             }, context_instance=RequestContext(request))
 
 
-@user_can_edit
+@user_can_edit(Entity)
 def entity_edit(request, federation_id=None, entity_id=None):
     entity = None
     federation = None
@@ -129,7 +129,7 @@ def entity_edit(request, federation_id=None, entity_id=None):
                               context_instance=RequestContext(request))
 
 
-@user_can_edit
+@user_can_edit(Entity)
 def entity_delete(request, federation_id, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
     messages.success(request,
@@ -165,7 +165,7 @@ def search_service(request):
     return render_to_response('metadataparser/service_search.html',
         {'searchform': form,
          'object_list': objects,
-         'enable_entity_filters': False,
+         'show_filters': False,
         }, context_instance=RequestContext(request))
 
 
@@ -223,5 +223,3 @@ def generic_list(request, objects, format, fields, headers, title, filename):
                                'title': title,
                               },
                               context_instance=RequestContext(request))
-
-

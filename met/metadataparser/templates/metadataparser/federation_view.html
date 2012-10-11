@@ -19,9 +19,6 @@
 <p><a href="{{ federation.url }}">{% trans "Federation external website" %}</a></p>
 {% endif %}
 
-{% with entities as object_list %}
-{% url federation_view federation.id as filter_base_url %}
-{% include "metadataparser/include.entity_list.html" %}
-{% endwith %}
+{% entity_list entities %}
 
 {% endblock %}

@@ -1,7 +1,8 @@
 from django import template
+from django.template.base import Node, TemplateSyntaxError
 from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
-from django.template.base import Node, TemplateSyntaxError
+from met.metadataparser.utils import export_modes
 from urllib import urlencode
 
 register = template.Library()
@@ -26,6 +27,14 @@ def federations_summary(context, federations=None):
 
     return {'federations': federations,
             'user': context.get('user', None),
+            'entity_types': DESCRIPTOR_TYPES}
+
+
+@register.inclusion_tag('metadataparser/tag_entity_list.html', takes_context=True)
+def entity_list(context, entities):
+    return {'request': context.get('request', None),
+            'entities': entities,
+            'show_filters': context.get('show_filters'),
             'entity_types': DESCRIPTOR_TYPES}
 
 
@@ -62,6 +71,25 @@ def entity_filter_url(base_path, filter, otherparams=None):
     return url
 
 
+@register.inclusion_tag('metadataparser/export-menu.html', takes_context=True)
+def export_menu(context, entities):
+    request = context.get('request')
+    copy_query = request.GET.copy()
+    copy_query.pop('page')
+    query = copy_query.urlencode()
+    base_path = request.path
+    formats = []
+    for mode in export_modes.keys():
+        url = base_path
+        if query:
+            url += '?%s&format=%s' % (query, mode)
+        else:
+            url += '?format=%s' % (mode)
+        formats.append({'url': url, 'label': mode})
+
+    return {'formats': formats}
+
+
 @register.simple_tag()
 def entities_count(federation, entity_type=None):
     if entity_type and entity_type != 'All':
@@ -91,7 +119,6 @@ def get_property(obj, prop=None):
     if isinstance(obj, dict):
         return obj.get(prop, None)
     if getattr(getattr(obj, uprop, None), 'all', None):
-
         return '. '.join(['<a href="%(link)s">%(name)s</a>' % {"link": item.get_absolute_url(),
                                                     "name": unicode(item)}
                           for item in getattr(obj, uprop).all()])

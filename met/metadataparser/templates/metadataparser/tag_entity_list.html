@@ -1,13 +1,13 @@
 {% load i18n metadataparsertags pagination_tags %}
 
-
-{% if enable_entity_filters %}
-{% entity_filters object_list %}
+{% if show_filters %}
+{% entity_filters entities %}
 {% endif %}
 
-<p><strong>{% trans "total results" %}</strong> {{ object_list|length }}</p>
+{% export_menu entities %}
+<p><strong>{% trans "total results" %}</strong> {{ entities|length }}</p>
 
-{% if enable_entity_filters %}
+{% if enable_filters %}
 <p class="text-muted">
 {% blocktrans %}
 Remember that one entity can be IDP and SP at the same time, so the addition
@@ -16,7 +16,7 @@ of IDP and SP can be bigger than the number of entities
 </p>
 {% endif %}
 
-{% autopaginate object_list %}
+{% autopaginate entities %}
 {% paginate %}
 <table class="table table-striped">
   <thead>
@@ -27,7 +27,7 @@ of IDP and SP can be bigger than the number of entities
     </tr>
   </thead>
   <tbody>
-  {% for entity in object_list %}
+  {% for entity in entities %}
   <tr>
     <td>
       <a title="{{ entity|default:entity.entityid }}"
@@ -46,15 +46,3 @@ of IDP and SP can be bigger than the number of entities
   </tbody>
 </table>
 {% paginate %}
-
-
-<div class="btn-group pull-right">
-  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-      {% trans "Export" %}
-      <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li><a href="{% url search_service_export "csv" %}?entityid={{ entity.entityid }}">{% trans "csv" %}</a></li>
-    <li><a href="{% url search_service_export "json" %}?entityid={{ entity.entityid }}">{% trans "json" %}</a></li>
-  </ul>
-</div>

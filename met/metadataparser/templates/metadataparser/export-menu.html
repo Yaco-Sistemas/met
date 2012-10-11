@@ -5,8 +5,8 @@
       <span class="caret"></span>
   </a>
   <ul class="dropdown-menu">
-    <li><a href="?format=csv">{% trans "csv" %}</a></li>
-    <li><a href="?format=json">{% trans "json" %}</a></li>
-    <li><a href="?format=xml">{% trans "xml" %}</a></li>
+    {% for format in formats %}
+    <li><a href="{{ format.url }}">{{ format.label }}</a></li>
+    {% endfor %}
   </ul>
 </div>
