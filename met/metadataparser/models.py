@@ -88,7 +88,8 @@ class Federation(Base):
                           blank=True, null=True)
     logo = models.ImageField(upload_to='federation_logo', blank=True,
                              null=True, verbose_name=_(u'Federation logo'))
-    part_of_edugain = models.BooleanField(verbose_name=_(u'Part of eduGAIN'))
+    is_interfederation = models.BooleanField(default=False, db_index=True,
+                                             verbose_name=_(u'Federation of federations'))
 
     @property
     def _metadata(self):
