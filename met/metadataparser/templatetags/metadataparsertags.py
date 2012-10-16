@@ -75,7 +75,8 @@ def entity_filter_url(base_path, filter, otherparams=None):
 def export_menu(context, entities):
     request = context.get('request')
     copy_query = request.GET.copy()
-    copy_query.pop('page')
+    if 'page' in copy_query:
+        copy_query.pop('page')
     query = copy_query.urlencode()
     base_path = request.path
     formats = []
