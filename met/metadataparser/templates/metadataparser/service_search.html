@@ -9,11 +9,6 @@
 
 {% bootstrap_searchform searchform %}
 
-
-{% if object_list %}
-
-  {% include "metadataparser/include.entity_list.html" %}
-
-{% endif %}
+{% entity_list object_list %}
 
 {% endblock %}
