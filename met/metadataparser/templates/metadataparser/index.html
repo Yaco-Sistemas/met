@@ -18,12 +18,12 @@
 
 {% if interfederations %}
 <h2>{% trans "Interfederations summary" %}</h2>
-{% federations_summary interfederations %}
+{% federations_summary "interfederations" interfederations %}
 {% endif %}
 
 <h2>{% trans "Federations summary" %}</h2>
 
-{% federations_summary federations %}
+{% federations_summary "federations" federations %}
 
 
 {% endblock %}

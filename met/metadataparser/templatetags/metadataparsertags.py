@@ -3,6 +3,7 @@ from django.template.base import Node, TemplateSyntaxError
 from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
 from met.metadataparser.query_export import export_modes
+from met.metadataparser.summary_export import export_summary_modes
 from urllib import urlencode
 
 register = template.Library()
@@ -21,12 +22,13 @@ def bootstrap_searchform(form):
 
 
 @register.inclusion_tag('metadataparser/federations_summary_tag.html', takes_context=True)
-def federations_summary(context, federations=None):
+def federations_summary(context, queryname, federations=None):
     if not federations:
         federations = Federation.objects.all()
 
     return {'federations': federations,
             'user': context.get('user', None),
+            'queryname': queryname,
             'entity_types': DESCRIPTOR_TYPES}
 
 
@@ -86,6 +88,18 @@ def export_menu(context, entities):
             url += '?%s&format=%s' % (query, mode)
         else:
             url += '?format=%s' % (mode)
+        formats.append({'url': url, 'label': mode})
+
+    return {'formats': formats}
+
+
+@register.inclusion_tag('metadataparser/export-menu.html')
+def export_summary_menu(query):
+    formats = []
+    for mode in export_summary_modes.keys():
+        urlquery = {'format': mode,
+                    'export': query}
+        url = "./?%(query)s" % {'query': urlencode(urlquery)}
         formats.append({'url': url, 'label': mode})
 
     return {'formats': formats}

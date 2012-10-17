@@ -60,10 +60,8 @@ def export_summary_xml(qs, relation, filename, counters):
 
     # Return XML file to browser as download
     response = HttpResponse(xml.toxml(), mimetype='application/xml')
-    response['Content-Disposition'] = ('filename=%s.xml'
+    response['Content-Disposition'] = ('attachment; filename=%s.xml'
                                        % slugify(filename))
-    #response['Content-Disposition'] = ('attachment; filename=%s.xml'
-    #                                   % slugify(filename))
     return response
 
 
