@@ -245,11 +245,13 @@ class Entity(Base):
             else:
                 for federation in self.federations.all():
                     try:
-                        self._entity_cached = federation.get_entity_metadata(self.entityid)
+                        entity_cached = federation.get_entity_metadata(self.entityid)
+                        if entity_cached and hasattr(self, '_entity_cached'):
+                            self._entity_cached.update(entity_cached)
+                        else:
+                            self._entity_cached = entity_cached
                     except ValueError:
                         continue
-                    else:
-                        break
             if not hasattr(self, '_entity_cached'):
                 raise ValueError("Can't find entity metadata")
 
