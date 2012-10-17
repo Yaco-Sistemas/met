@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db.models.fields import FieldDoesNotExist
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
@@ -150,85 +150,30 @@ def entity_delete(request, federation_id, entity_id):
 
 ## Querys
 def search_service(request):
-    entity_type = None
+    filters = {}
+    objects = []
     if request.method == 'GET':
         if 'entityid' in request.GET:
             form = ServiceSearchForm(request.GET)
             if form.is_valid():
                 entityid = form.cleaned_data['entityid']
                 entityid = entityid.strip()
+                filters['entityid__icontains'] = entityid
+
         else:
             form = ServiceSearchForm()
         entity_type = request.GET.get('entity_type', None)
-
-    try:
         if entity_type:
-            objects = Entity.longlist.filter(entityid__icontains=entityid,
-                                            entity_type=entity_type)
-        else:
-            objects = Entity.objects.filter(entityid__icontains=entityid)
-    except Entity.DoesNotExist:
-        messages.info(request, _(u"Can't found %(entityid)s service"
-                                   % {'entityid': entityid}))
+            filters['entity_type'] = entity_type
+        if filters:
+            objects = Entity.objects.filter(**filters)
+
+    if objects and 'format' in request.GET:
+        return export_query_set(request.GET.get('format'), objects,
+                                'entities_search_result', ('name', 'types', 'federations'))
 
     return render_to_response('metadataparser/service_search.html',
         {'searchform': form,
          'object_list': objects,
          'show_filters': False,
         }, context_instance=RequestContext(request))
-
-
-def search_service_export(request, mode='json'):
-    entity = None
-    if request.method == 'GET' and 'entityid' in request.GET:
-        form = ServiceSearchForm(request.GET)
-        if form.is_valid():
-            entityid = form.cleaned_data['entityid']
-            try:
-                entity = Entity.objects.get(entityid=entityid)
-            except Entity.DoesNotExist:
-                messages.info(request, _(u"Can't found %(entityid)s service"
-                                         % {'entityid': entityid}))
-
-        return export_query_set(mode, entity.federations.all(),
-                                entity, ('name', 'url'))
-
-
-def generic_list(request, objects, format, fields, headers, title, filename):
-    model = objects.model
-    headers = []
-    for fieldname in fields:
-        if fieldname:
-            try:
-                field = model._meta.get_field(fieldname)
-                headers.append(field.verbose_name)
-            except FieldDoesNotExist:
-                if hasattr(objects[0], fieldname):
-                    headers.append(fieldname.capitalize())
-        else:
-            headers.append(unicode(model._meta.verbose_name))
-
-    if format:
-        return export_query_set(format, objects, filename, fields)
-
-    page = None
-    if request.GET and 'page' in request.GET:
-        page = request.GET['page']
-
-    paginator = Paginator(objects, getattr(settings, 'PAGE_LENGTH', 25))
-
-    try:
-        objs_page = paginator.page(page)
-    except PageNotAnInteger:
-        objs_page = paginator.page(1)
-    except EmptyPage:
-        objs_page = paginator.page(paginator.num_pages)
-
-    return render_to_response('metadataparser/generic_list.html',
-                              {'objs_page': objs_page,
-                               'objects': objects,
-                               'headers': headers,
-                               'fields': fields,
-                               'title': title,
-                              },
-                              context_instance=RequestContext(request))
