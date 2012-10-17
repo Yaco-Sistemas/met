@@ -239,7 +239,7 @@ class Entity(Base):
                         continue
                     else:
                         break
-                if not self._entity_cached:
+                if not hasattr(self, '_entity_cached'):
                     raise ValueError("Can't find entity metadata")
 
     def _get_property(self, prop):
