@@ -1,12 +1,12 @@
 {% load i18n metadataparsertags %}
 {% if federations %}
-
-
+<p><strong>{% trans "Total" %}:</strong> {{ federations|length }}</p>
 <div class="btn-toolbar pull-right">
 {% export_summary_menu queryname %}
 {% if user.is_superuser %}
 <a class="btn" href="{% url federation_add %}">{% trans "Add federation" %}</a>
 {% endif %}
+
 </div>
 <table class="table table-striped">
   <thead>
