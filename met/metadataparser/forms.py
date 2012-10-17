@@ -17,24 +17,26 @@ class FederationForm(forms.ModelForm):
 
     class Meta:
         model = Federation
+        exclude = 'file_id'
 
 
 class EntityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EntityForm, self).__init__(*args, **kwargs)
-        federations_choices = self.fields['federations'].widget.choices
-        self.fields['federations'].widget = CheckboxSelectMultiple(
-                                                choices=federations_choices)
-        self.fields['federations'].help_text = ''
         editor_users_choices = self.fields['editor_users'].widget.choices
         self.fields['editor_users'].widget = CheckboxSelectMultiple(
                                                 choices=editor_users_choices)
         self.fields['editor_users'].help_text = _("This users can edit only "
                                                   "this entity")
 
+        entity_types = self.fields['types'].widget.choices
+        self.fields['types'].widget = CheckboxSelectMultiple(choices=entity_types)
+        self.fields['types'].help_text = ''
+
     class Meta:
         model = Entity
+        exclude = ('federations', 'file_id')
 
 
 class ServiceSearchForm(forms.Form):

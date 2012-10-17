@@ -170,6 +170,14 @@ class EntityManager(models.Manager):
         return EntityQuerySet(self.model, using=self._db)
 
 
+class EntityType(models.Model):
+    name = models.CharField(blank=False, max_length=10, unique=True,
+                            verbose_name=_(u'Name'), db_index=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Entity(Base):
 
     READABLE_PROTOCOLS = {
@@ -183,6 +191,7 @@ class Entity(Base):
     federations = models.ManyToManyField(Federation,
                                          verbose_name=_(u'Federations'))
 
+    types = models.ManyToManyField(EntityType, verbose_name=_(u'Type'))
     objects = models.Manager()
     longlist = EntityManager()
 
@@ -199,7 +208,7 @@ class Entity(Base):
         return self._get_property('description')
 
     @property
-    def types(self):
+    def xml_types(self):
         return self._get_property('entity_types')
 
     @property
