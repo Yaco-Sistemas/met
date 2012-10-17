@@ -160,13 +160,13 @@ def entity_edit(request, federation_id=None, entity_id=None):
 
 
 @user_can_edit(Entity)
-def entity_delete(request, federation_id, entity_id):
+def entity_delete(request, entity_id):
     entity = get_object_or_404(Entity, id=entity_id)
     messages.success(request,
                      _(u"%(entity)s entity was deleted succesfully"
                      % {'entity': unicode(entity)}))
-    entity_id.delete()
-    return HttpResponseRedirect(reverse('entities_list', args=[federation_id]))
+    entity.delete()
+    return HttpResponseRedirect(reverse('index'))
 
 
 ## Querys
