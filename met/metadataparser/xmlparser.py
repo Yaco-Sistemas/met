@@ -83,7 +83,7 @@ class MetadataParser(object):
         return federation
 
     def get_entity(self, entityid):
-        entity_xpath = self.etree.xpath("md:EntityDescriptor[@entityID='%s']"
+        entity_xpath = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
                                          % entityid, namespaces=NAMESPACES)
         if len(entity_xpath):
             entity_etree = entity_xpath[0]

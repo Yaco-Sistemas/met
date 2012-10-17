@@ -1,8 +1,5 @@
 from django.contrib import messages
-from django.conf import settings
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models.fields import FieldDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -14,12 +11,33 @@ from met.metadataparser.models import Federation, Entity
 from met.metadataparser.forms import (FederationForm, EntityForm,
                                       ServiceSearchForm)
 
-from met.metadataparser.utils import export_query_set
+from met.metadataparser.summary_export import export_summary
+from met.metadataparser.query_export import export_query_set
 
 
 def index(request):
     federations = Federation.objects.filter(is_interfederation=False)
     interfederations = Federation.objects.filter(is_interfederation=True)
+    export = request.GET.get('export', None)
+    format = request.GET.get('format', None)
+    if export and format:
+        counters = (
+                    ('all', {}),
+                    ('IDPSSO', {'types__xmlname': 'IDPSSODescriptor'}),
+                    ('SPSSO', {'types__xmlname': 'SPSSODescriptor'}),
+                   )
+        if export == 'interfederations':
+            return export_summary(request.GET.get('format'), interfederations,
+                                  'entity_set', 'interfederations_summary',
+                                  counters)
+
+        elif export == 'federations':
+            return export_summary(request.GET.get('format'), federations,
+                                  'entity_set', 'federations_summary',
+                                  counters)
+        else:
+            raise HttpResponseBadRequest('Not valid export query')
+
     return render_to_response('metadataparser/index.html', {
            'interfederations': interfederations,
            'federations': federations,
@@ -36,6 +54,9 @@ def federation_view(request, federation_id):
     else:
         entities = Entity.objects.filter(federations__id=federation.id)
 
+    if 'format' in request.GET:
+        return export_query_set(request.GET.get('format'), entities,
+                                'entities_search_result', ('', 'types', 'federations'))
     return render_to_response('metadataparser/federation_view.html',
             {'federation': federation,
              'entity_type': entity_type or 'All',
@@ -170,7 +191,7 @@ def search_service(request):
 
     if objects and 'format' in request.GET:
         return export_query_set(request.GET.get('format'), objects,
-                                'entities_search_result', ('name', 'types', 'federations'))
+                                'entities_search_result', ('', 'types', 'federations'))
 
     return render_to_response('metadataparser/service_search.html',
         {'searchform': form,

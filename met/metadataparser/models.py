@@ -11,8 +11,8 @@ from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-from met.metadataparser.xmlparser import MetadataParser
 from met.metadataparser.utils import compare_filecontents
+from met.metadataparser.xmlparser import MetadataParser, DESCRIPTOR_TYPES_DISPLAY
 
 
 def update_obj(mobj, obj, attrs=None):
@@ -123,8 +123,7 @@ class Federation(Base):
         update_obj(metadata.get_federation(), self)
 
     def process_metadata_entities(self):
-        for entityid in self._metadata.get_entities():
-            m_id = entityid
+        for m_id in self._metadata.get_entities():
             try:
                 entity = self.get_entity(entityid=m_id)
             except Entity.DoesNotExist:
@@ -133,6 +132,7 @@ class Federation(Base):
                     self.entity_set.add(entity)
                 except Entity.DoesNotExist:
                     entity = self.entity_set.create(entityid=m_id)
+            entity.process_metadata(self._metadata.get_entity(m_id))
 
     def get_absolute_url(self):
         return reverse('federation_view', args=[self.id])
@@ -171,8 +171,10 @@ class EntityManager(models.Manager):
 
 
 class EntityType(models.Model):
-    name = models.CharField(blank=False, max_length=10, unique=True,
+    name = models.CharField(blank=False, max_length=20, unique=True,
                             verbose_name=_(u'Name'), db_index=True)
+    xmlname = models.CharField(blank=False, max_length=20, unique=True,
+                            verbose_name=_(u'Name in XML'), db_index=True)
 
     def __unicode__(self):
         return self.name
@@ -248,11 +250,14 @@ class Entity(Base):
                         continue
                     else:
                         break
-                if not hasattr(self, '_entity_cached'):
-                    raise ValueError("Can't find entity metadata")
+            if not hasattr(self, '_entity_cached'):
+                raise ValueError("Can't find entity metadata")
 
     def _get_property(self, prop):
-        self.load_metadata()
+        try:
+            self.load_metadata()
+        except ValueError:
+            return None
         if hasattr(self, '_entity_cached'):
             return self._entity_cached.get(prop, None)
         else:
@@ -266,6 +271,15 @@ class Entity(Base):
             raise ValueError("EntityID is not the same")
 
         self._entity_cached = entity_data
+        if self.xml_types:
+            for etype in self.xml_types:
+                try:
+                    entity_type = EntityType.objects.get(xmlname=etype)
+                except EntityType.DoesNotExist:
+                    entity_type = EntityType.objects.create(xmlname=etype,
+                                              name=DESCRIPTOR_TYPES_DISPLAY[etype])
+                if entity_type not in self.types.all():
+                    self.types.add(entity_type)
 
     def can_edit(self, user):
         if super(Entity, self).can_edit(user):
@@ -301,3 +315,4 @@ def federation_pre_save(sender, instance, **kwargs):
 def entity_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
+        instance.process_metadata()

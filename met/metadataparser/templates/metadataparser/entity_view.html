@@ -24,49 +24,52 @@
   {% endif %}
 {% endfor %}
 
-<dl class="dl-horizontal">
-
+<ul class="unstyled">
   {% if entity.description %}
-  <dt>{% trans "Description" %}</dt>
-  <dd>{% l10n_property entity.description %}</dd>
+  <li>
+    <strong>{% trans "Description" %}: </strong>{% l10n_property entity.description %}
+  </li>
   {% endif %}
 
-  <dt>{% trans "EntityID" %}</dt>
-  <dd>{{ entity.entityid }}</dd>
+  <li>
+  <strong>{% trans "EntityID" %}: </strong>{{ entity.entityid }}
+  </li>
 
-  <dt>{% trans "Entity Types" %}</dt>
-  <dd>{{ entity.types|display_etype }}</dd>
+  <li>
+  <strong>{% trans "Entity Types" %}: </strong>{{ entity.types|display_etype }}
+  </li>
 
   {% if entity.protocols %}
-  <dt>{% trans "Supported protocols" %}</dt>
-  <dd>{{ entity.display_protocols|join:", " }}</dd>
+  <li>
+  <strong>{% trans "Supported protocols" %}: </strong>
+  <ul>
+    {% for proto in entity.display_protocols %}
+      <li>{{ proto }}</li>
+    {% endfor %}
+  </ul>
+  </li>
   {% endif %}
 
   {% if entity.organization %}
-  <dt>{% trans "Organization" %}</dt>
-  <dd>
-    <ul class="unstyled">
+  <li>
+  <strong>{% trans "Organization" %}: </strong>
+    <ul>
     {% for organization in entity.organization %}
     <li><a href="{{ organization.URL }}">{{ organization.displayName }}</a></li>
     {% endfor %}
-  </ul>
-  </dd>
+   </ul>
+  </li>
   {% endif %}
 
-  <dt>{% trans "Federations" %}</dt>
-  <dd>
-  <ul class="unstyled">
-    {% for federation in entity.federations.all %}
-    <li><a href="{% url federation_view federation.id %}">{{ federation }}</a></li>
-    {% endfor %}
-  </ul>
-  </dd>
-
-  {% if entity.metadata_file %}
-  <dt>{% trans "Metadata File" %}</dt>
-  <dd><a href="{% url metadata_view entity.metadata_file.id %}">{{ entity.metadata_file }}</a></dd>
-  {% endif %}
-</dl>
+  <li>
+  <strong>{% trans "Federations" %}: </strong>
+    <ul>
+      {% for federation in entity.federations.all %}
+      <li><a href="{% url federation_view federation.id %}">{{ federation }}</a></li>
+      {% endfor %}
+    </ul>
+  </li>
+</ul>
 
 {% endblock %}
 

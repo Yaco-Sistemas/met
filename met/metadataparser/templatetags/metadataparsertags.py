@@ -2,7 +2,7 @@ from django import template
 from django.template.base import Node, TemplateSyntaxError
 from met.metadataparser.models import Federation
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES, DESCRIPTOR_TYPES_DISPLAY
-from met.metadataparser.utils import export_modes
+from met.metadataparser.query_export import export_modes
 from urllib import urlencode
 
 register = template.Library()
@@ -138,14 +138,8 @@ def active_url(context, pattern):
 
 @register.filter(name='display_etype')
 def display_etype(value, separator=', '):
-    if isinstance(value, list):
-        display = []
-        for item in value:
-            if item in DESCRIPTOR_TYPES_DISPLAY:
-                display.append(DESCRIPTOR_TYPES_DISPLAY.get(item))
-            else:
-                display.append(item)
-        return separator.join(display)
+    if hasattr(value, 'all'):
+        return separator.join([unicode(item) for item in value.all()])
     else:
         if value in DESCRIPTOR_TYPES_DISPLAY:
             return DESCRIPTOR_TYPES_DISPLAY.get(value)
