@@ -22,7 +22,7 @@
   {% for federation in federations %}
   <tr>
     <td>
-      <a href="{% url federation_view federation.id %}">{{ federation }}</a>
+      <a href="{{ federation.get_absolute_url }}">{{ federation }}</a>
     </td>
 
     <td>{% entities_count federation %}</td>

@@ -11,8 +11,8 @@
 
 {% block content %}
 {% if form.instance.id %}
-  {% url federation_delete form.instance.id as delete_link %}
-  {% url federation_view form.instance.id as cancel_link %}
+  {% url federation_delete form.instance.slug as delete_link %}
+  {% url federation_view form.instance.slug as cancel_link %}
 {% else %}
   {% url federations_list as cancel_link %}
 {% endif %}
@@ -32,7 +32,7 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "No" %}</button>
     <a class="btn btn-primary"
-      href="{% url federation_delete form.instance.id %}">{% trans "Delete" %}</a>
+      href="{% url federation_delete form.instance.slug %}">{% trans "Delete" %}</a>
   </div>
 </div>
 {% endif %}

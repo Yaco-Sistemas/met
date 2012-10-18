@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from met.metadataparser.utils import compare_filecontents
@@ -32,12 +33,12 @@ class Base(models.Model):
                             verbose_name=_(u'metadata xml file'),
                             help_text=_("if url is set, metadata url will be "
                                         "fetched and replace file value"))
-
     file_id = models.CharField(blank=True, null=True, max_length=100,
                                verbose_name=_(u'File ID'))
 
     editor_users = models.ManyToManyField(User, null=True, blank=True,
                                           verbose_name=_('editor users'))
+    slug = models.SlugField(max_length=100, unique=True)
 
     class Meta:
         abstract = True
@@ -82,8 +83,8 @@ class XmlDescriptionError(Exception):
 
 class Federation(Base):
 
-    name = models.CharField(blank=True, null=True, max_length=100,
-                            verbose_name=_(u'Name'))
+    name = models.CharField(blank=False, null=False, max_length=100,
+                            unique=True, verbose_name=_(u'Name'))
     url = models.URLField(verbose_name='Federation url',
                           blank=True, null=True)
     logo = models.ImageField(upload_to='federation_logo', blank=True,
@@ -135,7 +136,7 @@ class Federation(Base):
             entity.process_metadata(self._metadata.get_entity(m_id))
 
     def get_absolute_url(self):
-        return reverse('federation_view', args=[self.id])
+        return reverse('federation_view', args=[self.slug])
 
 
 class EntityQuerySet(QuerySet):
@@ -291,7 +292,7 @@ class Entity(Base):
                 return True
 
     def get_absolute_url(self):
-        return reverse('entity_view', args=[self.id])
+        return reverse('entity_view', args=[self.slug])
 
 
 class EntityLogo(models.Model):
@@ -311,6 +312,8 @@ class EntityLogo(models.Model):
 def federation_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
+    if instance.name:
+        instance.slug = slugify(instance.name)
 
 
 @receiver(pre_save, sender=Entity, dispatch_uid='entity_pre_save')
@@ -318,3 +321,5 @@ def entity_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
         instance.process_metadata()
+    if unicode(instance):
+        instance.slug = slugify(unicode(instance))

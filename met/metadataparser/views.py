@@ -44,8 +44,9 @@ def index(request):
            }, context_instance=RequestContext(request))
 
 
-def federation_view(request, federation_id):
-    federation = get_object_or_404(Federation, id=federation_id)
+def federation_view(request, federation_slug=None):
+    federation = get_object_or_404(Federation, slug=federation_slug)
+
     entity_type = None
     if (request.GET and 'entity_type' in request.GET):
         entity_type = request.GET['entity_type']
@@ -66,11 +67,11 @@ def federation_view(request, federation_id):
 
 
 @user_can_edit(Federation)
-def federation_edit(request, federation_id=None):
-    if federation_id is None:
+def federation_edit(request, federation_slug=None):
+    if federation_slug is None:
         federation = None
     else:
-        federation = get_object_or_404(Federation, id=federation_id)
+        federation = get_object_or_404(Federation, slug=federation_slug)
 
     if request.method == 'POST':
         form = FederationForm(request.POST, request.FILES, instance=federation)
@@ -86,9 +87,7 @@ def federation_edit(request, federation_id=None):
             else:
                 messages.success(request, _('Federation created succesfully'))
 
-            federation = form.instance
-            url = reverse('federation_view', args=[federation.id])
-            return HttpResponseRedirect(url)
+            return HttpResponseRedirect(form.instance.get_absolute_url())
 
         else:
             messages.error(request, _('Please correct the errors indicated'
@@ -102,8 +101,8 @@ def federation_edit(request, federation_id=None):
 
 
 @user_can_edit(Federation)
-def federation_delete(request, federation_id):
-    federation = get_object_or_404(Federation, id=federation_id)
+def federation_delete(request, federation_slug):
+    federation = get_object_or_404(Federation, slug=federation_slug)
     messages.success(request,
                      _(u"%(federation)s federation was deleted succesfully"
                      % {'federation': unicode(federation)}))
@@ -111,8 +110,8 @@ def federation_delete(request, federation_id):
     return HttpResponseRedirect(reverse('federations_list'))
 
 
-def entity_view(request, entity_id):
-    entity = get_object_or_404(Entity, id=entity_id)
+def entity_view(request, entity_slug):
+    entity = get_object_or_404(Entity, slug=entity_slug)
 
     return render_to_response('metadataparser/entity_view.html',
             {'entity': entity,
@@ -120,16 +119,16 @@ def entity_view(request, entity_id):
 
 
 @user_can_edit(Entity)
-def entity_edit(request, federation_id=None, entity_id=None):
+def entity_edit(request, federation_slug=None, entity_slug=None):
     entity = None
     federation = None
-    if federation_id:
-        federation = get_object_or_404(Federation, id=federation_id)
-        if entity_id:
-            entity = get_object_or_404(Entity, id=entity_id,
+    if federation_slug:
+        federation = get_object_or_404(Federation, slug=federation_slug)
+        if entity_slug:
+            entity = get_object_or_404(Entity, slug=entity_slug,
                                        federations__id=federation.id)
-    if entity_id and not federation_id:
-        entity = get_object_or_404(Entity, id=entity_id)
+    if entity_slug and not federation_slug:
+        entity = get_object_or_404(Entity, slug=entity_slug)
 
     if request.method == 'POST':
         form = EntityForm(request.POST, request.FILES, instance=entity)
@@ -143,9 +142,7 @@ def entity_edit(request, federation_id=None, entity_id=None):
                 messages.success(request, _('Entity modified succesfully'))
             else:
                 messages.success(request, _('Entity created succesfully'))
-            entity = form.instance
-            url = reverse('entity_view', args=[entity.id])
-            return HttpResponseRedirect(url)
+            return HttpResponseRedirect(form.instance.get_absolute_url())
 
         else:
             messages.error(request, _('Please correct the errors indicated'
@@ -160,8 +157,8 @@ def entity_edit(request, federation_id=None, entity_id=None):
 
 
 @user_can_edit(Entity)
-def entity_delete(request, entity_id):
-    entity = get_object_or_404(Entity, id=entity_id)
+def entity_delete(request, entity_slug):
+    entity = get_object_or_404(Entity, slug=entity_slug)
     messages.success(request,
                      _(u"%(entity)s entity was deleted succesfully"
                      % {'entity': unicode(entity)}))
