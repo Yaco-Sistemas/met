@@ -29,9 +29,9 @@
 </fieldset>
 {% endfor %}
 <div class="form-actions">
-  <button class="btn" type="submit">{% trans "Submit" %}</button>
+  <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
 {% if delete_link %}
-  <a class="btn" href="{{ delete_link }}">{% trans "Delete" %}</a>
+  <button type="button" class="btn" data-toggle="modal" data-target="#deleteModal">{% trans "Delete" %}</button>
 {% endif %}
   <a class="btn" href="{{ cancel_link }}">{% trans "Cancel" %}</a>
 </div>
