@@ -17,7 +17,7 @@ class FederationForm(forms.ModelForm):
 
     class Meta:
         model = Federation
-        exclude = 'file_id'
+        exclude = ('file_id', 'slug')
 
 
 class EntityForm(forms.ModelForm):
