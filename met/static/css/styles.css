@@ -36,3 +36,7 @@ div.controls ul {
     width: 350px;
     max-height: 150px;
 }
+
+table .entitytype {
+    width: 80px;
+}

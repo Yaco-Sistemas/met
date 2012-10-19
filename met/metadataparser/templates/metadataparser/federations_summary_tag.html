@@ -12,9 +12,9 @@
   <thead>
     <tr>
       <th>{% trans "Federation Name" %}</th>
-      <th>{% trans "Entities" %}</th>
+      <th class="entitytype">{% trans "Entities" %}</th>
       {% for etype in entity_types %}
-      <th>{{ etype|display_etype }}</th>
+      <th class="entitytype">{{ etype|display_etype }}</th>
       {% endfor %}
     </tr>
   </thead>
@@ -25,9 +25,9 @@
       <a href="{{ federation.get_absolute_url }}">{{ federation }}</a>
     </td>
 
-    <td>{% entities_count federation %}</td>
+    <td class="entitytype">{% entities_count federation %}</td>
     {% for etype in entity_types %}
-    <td>{% entities_count federation etype %}
+    <td class="entitytype">{% entities_count federation etype %}</td>
     {% endfor %}
   </tr>
   {% endfor %}
