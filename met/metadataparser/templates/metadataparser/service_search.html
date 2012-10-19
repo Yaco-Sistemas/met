@@ -2,12 +2,10 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-<h2>{% trans "Service search" %}</h2>
+<h2>{% trans "Service search results" %}</h2>
 {% endblock %}
 
 {% block content %}
-
-{% bootstrap_searchform searchform %}
 
 {% entity_list object_list %}
 
