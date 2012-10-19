@@ -1,6 +1,7 @@
 from os import path
 import requests
 from urlparse import urlsplit
+from urllib import quote_plus
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -38,7 +39,6 @@ class Base(models.Model):
 
     editor_users = models.ManyToManyField(User, null=True, blank=True,
                                           verbose_name=_('editor users'))
-    slug = models.SlugField(max_length=100, unique=True)
 
     class Meta:
         abstract = True
@@ -91,6 +91,7 @@ class Federation(Base):
                              null=True, verbose_name=_(u'Federation logo'))
     is_interfederation = models.BooleanField(default=False, db_index=True,
                                              verbose_name=_(u'Federation of federations'))
+    slug = models.SlugField(max_length=200, unique=True)
 
     @property
     def _metadata(self):
@@ -292,7 +293,7 @@ class Entity(Base):
                 return True
 
     def get_absolute_url(self):
-        return reverse('entity_view', args=[self.slug])
+        return reverse('entity_view', args=[quote_plus(self.entityid)])
 
 
 class EntityLogo(models.Model):
@@ -313,7 +314,7 @@ def federation_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
     if instance.name:
-        instance.slug = slugify(instance.name)
+        instance.slug = slugify(unicode(instance))[:200]
 
 
 @receiver(pre_save, sender=Entity, dispatch_uid='entity_pre_save')
@@ -321,5 +322,3 @@ def entity_pre_save(sender, instance, **kwargs):
     if instance.file_url:
         instance.fetch_metadata_file()
         instance.process_metadata()
-    if unicode(instance):
-        instance.slug = slugify(unicode(instance))

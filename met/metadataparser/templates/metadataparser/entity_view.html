@@ -12,7 +12,7 @@
 {% block content %}
 {% canedit entity %}
 <div class="btn-group pull-right">
-  <a class="btn" href="{% url entity_edit entity.slug %}">{% trans "edit" %}</a>
+  <a class="btn" href="{% url entity_edit entity.id %}">{% trans "edit" %}</a>
 </div>
 {% endcanedit %}
 

@@ -114,25 +114,30 @@ def federation_delete(request, federation_slug):
     return HttpResponseRedirect(reverse('federations_list'))
 
 
-def entity_view(request, entity_slug):
-    entity = get_object_or_404(Entity, slug=entity_slug)
+def entity_view(request, entityid):
+    entity = get_object_or_404(Entity, entityid=entityid)
 
     return render_to_response('metadataparser/entity_view.html',
             {'entity': entity,
             }, context_instance=RequestContext(request))
 
 
+def entity_permalink(request, entity_id):
+    entity = get_object_or_404(Entity, id=entity_id)
+    return HttpResponseRedirect(entity.get_absolute_url())
+
+
 @user_can_edit(Entity)
-def entity_edit(request, federation_slug=None, entity_slug=None):
+def entity_edit(request, federation_slug=None, entity_id=None):
     entity = None
     federation = None
     if federation_slug:
         federation = get_object_or_404(Federation, slug=federation_slug)
-        if entity_slug:
-            entity = get_object_or_404(Entity, slug=entity_slug,
+        if entity_id:
+            entity = get_object_or_404(Entity, id=entity_id,
                                        federations__id=federation.id)
-    if entity_slug and not federation_slug:
-        entity = get_object_or_404(Entity, slug=entity_slug)
+    if entity_id and not federation_slug:
+        entity = get_object_or_404(Entity, id=entity_id)
 
     if request.method == 'POST':
         form = EntityForm(request.POST, request.FILES, instance=entity)
@@ -161,8 +166,8 @@ def entity_edit(request, federation_slug=None, entity_slug=None):
 
 
 @user_can_edit(Entity)
-def entity_delete(request, entity_slug):
-    entity = get_object_or_404(Entity, slug=entity_slug)
+def entity_delete(request, entity_id):
+    entity = get_object_or_404(Entity, id=entity_id)
     messages.success(request,
                      _(u"%(entity)s entity was deleted succesfully"
                      % {'entity': unicode(entity)}))
