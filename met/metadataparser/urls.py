@@ -11,11 +11,9 @@ urlpatterns = patterns('met.metadataparser.views',
         name='federation_view'),
     url(r'^federation/(?P<federation_slug>[-\w]+)/entityadd/$', 'entity_edit',
         name='entity_add'),
-    url(r'^entity/(?P<entity_id>\d+)/$', 'entity_permalink', name='entity_permalink'),
     url(r'^entity/(?P<entity_id>.+)/edit/$', 'entity_edit', name='entity_edit'),
     url(r'^entity/(?P<entity_id>.+)/delete/$', 'entity_delete', name='entity_delete'),
     url(r'^entity/(?P<entityid>.+)/$', 'entity_view', name='entity_view'),
-
 
     url(r'^search_service/$', 'search_service', name='search_service'),
     )

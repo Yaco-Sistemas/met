@@ -122,11 +122,6 @@ def entity_view(request, entityid):
             }, context_instance=RequestContext(request))
 
 
-def entity_permalink(request, entity_id):
-    entity = get_object_or_404(Entity, id=entity_id)
-    return HttpResponseRedirect(entity.get_absolute_url())
-
-
 @user_can_edit(Entity)
 def entity_edit(request, federation_slug=None, entity_id=None):
     entity = None
