@@ -16,6 +16,13 @@
 {% endblocktrans %}
 </div>
 
+<p class="text-muted">
+{% blocktrans %}
+Remember that one entity can be IDP and SP at the same time, so the addition
+of IDP and SP can be bigger than the number of entities
+{% endblocktrans %}
+</p>
+
 {% if interfederations %}
 <h2>{% trans "Interfederations summary" %}</h2>
 {% federations_summary "interfederations" interfederations %}
