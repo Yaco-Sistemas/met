@@ -90,7 +90,7 @@ class Federation(Base):
     logo = models.ImageField(upload_to='federation_logo', blank=True,
                              null=True, verbose_name=_(u'Federation logo'))
     is_interfederation = models.BooleanField(default=False, db_index=True,
-                                             verbose_name=_(u'Federation of federations'))
+                                         verbose_name=_(u'Is interfederation'))
     slug = models.SlugField(max_length=200, unique=True)
 
     @property
