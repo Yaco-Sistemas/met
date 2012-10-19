@@ -2,22 +2,25 @@
 {% load i18n metadataparsertags %}
 
 {% block appendheader %}
-<h2>
-  {{ federation }}
-</h2>
-
 {% canedit federation %}
 <div class="btn-group pull-right">
  <a class="btn" href="{% url federation_edit federation.slug %}">{% trans "edit" %}</a>
  <a class="btn" href="{% url entity_add federation.slug %}">{% trans "add entity" %}</a>
 </div>
 {% endcanedit %}
+<h2>
+  {{ federation }}
+</h2>
 {% endblock %}
 
 {% block content %}
+{% if federation.logo %}
+<p><img alt="{{ federation }} logo" src="{{ MEDIA_URL }}{{ federation.logo }}"/></p>
+{% endif %}
 {% if federation.url %}
 <p><a href="{{ federation.url }}">{% trans "Federation external website" %}</a></p>
 {% endif %}
+
 
 {% entity_list entities %}
 
