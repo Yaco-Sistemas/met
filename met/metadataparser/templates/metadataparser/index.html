@@ -23,14 +23,39 @@ of IDP and SP can be bigger than the number of entities
 {% endblocktrans %}
 </p>
 
+<div class="summary">
+<h2>{% trans "Entities summary" %}</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th class="entitytype">{% trans "Entities" %}</th>
+      {% for etype in entity_types %}
+      <th class="entitytype">{{ etype|display_etype }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td class="entitytype">{% entities_count entities %}</td>
+    {% for etype in entity_types %}
+    <td class="entitytype">{% entities_count entities etype %}</td>
+    {% endfor %}
+  </tr>
+</tbody>
+</table>
+</div>
+
 {% if interfederations %}
+<div class="summary">
 <h2>{% trans "Interfederations summary" %}</h2>
 {% federations_summary "interfederations" interfederations %}
+</div>
 {% endif %}
 
+<div class="summary">
 <h2>{% trans "Federations summary" %}</h2>
-
 {% federations_summary "federations" federations %}
+</div>
 
 
 {% endblock %}

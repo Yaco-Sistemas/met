@@ -40,3 +40,14 @@ div.controls ul {
 table .entitytype {
     width: 80px;
 }
+
+div.summary {
+    margin: 75px 0;
+}
+
+div.summary p {
+    margin: 15px 0;
+}
+div.summary .btn-toolbar {
+    margin-top: 0px;
+}

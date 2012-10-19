@@ -13,10 +13,12 @@ from met.metadataparser.forms import (FederationForm, EntityForm,
 
 from met.metadataparser.summary_export import export_summary
 from met.metadataparser.query_export import export_query_set
+from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
 
 def index(request):
     federations = Federation.objects.filter(is_interfederation=False)
+
     interfederations = Federation.objects.filter(is_interfederation=True)
     export = request.GET.get('export', None)
     format = request.GET.get('format', None)
@@ -41,6 +43,8 @@ def index(request):
     return render_to_response('metadataparser/index.html', {
            'interfederations': interfederations,
            'federations': federations,
+           'entities': Entity.objects.all(),
+           'entity_types': DESCRIPTOR_TYPES,
            }, context_instance=RequestContext(request))
 
 

@@ -106,11 +106,11 @@ def export_summary_menu(query):
 
 
 @register.simple_tag()
-def entities_count(federation, entity_type=None):
+def entities_count(entity_qs, entity_type=None):
     if entity_type and entity_type != 'All':
-        return federation._metadata.count_entities_by_type(entity_type)
+        return entity_qs.filter(types__xmlname=entity_type).count()
     else:
-        return federation._metadata.count_entities()
+        return entity_qs.count()
 
 
 @register.simple_tag(takes_context=True)

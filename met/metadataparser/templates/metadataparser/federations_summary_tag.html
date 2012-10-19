@@ -25,9 +25,9 @@
       <a href="{{ federation.get_absolute_url }}">{{ federation }}</a>
     </td>
 
-    <td class="entitytype">{% entities_count federation %}</td>
+    <td class="entitytype">{% entities_count federation.entity_set %}</td>
     {% for etype in entity_types %}
-    <td class="entitytype">{% entities_count federation etype %}</td>
+    <td class="entitytype">{% entities_count federation.entity_set etype %}</td>
     {% endfor %}
   </tr>
   {% endfor %}
