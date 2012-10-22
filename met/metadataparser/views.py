@@ -111,7 +111,7 @@ def federation_delete(request, federation_slug):
                      _(u"%(federation)s federation was deleted succesfully"
                      % {'federation': unicode(federation)}))
     federation.delete()
-    return HttpResponseRedirect(reverse('federations_list'))
+    return HttpResponseRedirect(reverse('index'))
 
 
 def entity_view(request, entityid):
