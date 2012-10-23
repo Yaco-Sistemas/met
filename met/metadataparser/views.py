@@ -1,10 +1,11 @@
+from urllib import unquote
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-
 
 from met.metadataparser.decorators import user_can_edit
 from met.metadataparser.models import Federation, Entity
@@ -115,6 +116,7 @@ def federation_delete(request, federation_slug):
 
 
 def entity_view(request, entityid):
+    entityid = unquote(entityid)
     entity = get_object_or_404(Entity, entityid=entityid)
 
     return render_to_response('metadataparser/entity_view.html',
