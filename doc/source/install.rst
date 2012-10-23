@@ -92,6 +92,9 @@ Apache configuration
 This is a basic template that assumes the project was deployed into ``met``
 user's home.
 
+A apache 2.2.18 or later is required (AllowEncodedSlashes NoDecode)
+http://httpd.apache.org/docs/2.2/mod/core.html#allowencodedslashes
+
 .. code-block:: text
 
     Alias /media/ /home/met/media/
@@ -106,6 +109,9 @@ user's home.
     Order deny,allow
     Allow from all
     </Directory>
+
+    AllowEncodedSlashes NoDecode
+
 
     WSGIScriptAlias / /home/met/met/django-wsgi.py
 
