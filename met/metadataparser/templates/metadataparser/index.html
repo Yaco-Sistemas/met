@@ -28,7 +28,7 @@ of IDP and SP can be bigger than the number of entities
 <table class="table table-striped">
   <thead>
     <tr>
-      <th class="entitytype">{% trans "Entities" %}</th>
+      <th>{% trans "Entities" %}</th>
       {% for etype in entity_types %}
       <th class="entitytype">{{ etype|display_etype }}</th>
       {% endfor %}
@@ -36,7 +36,7 @@ of IDP and SP can be bigger than the number of entities
   </thead>
   <tbody>
   <tr>
-    <td class="entitytype">{% entities_count entities %}</td>
+    <td>{% entities_count entities %}</td>
     {% for etype in entity_types %}
     <td class="entitytype">{% entities_count entities etype %}</td>
     {% endfor %}

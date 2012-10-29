@@ -23,11 +23,10 @@ MDUI_NAMESPACE = NAMESPACES['mdui']
 #                    'AttributeAuthorityDescriptor', 'PDPDescriptor',
 #                    'AffiliationDescriptor',)
 
-
 DESCRIPTOR_TYPES = ('IDPSSODescriptor', 'SPSSODescriptor',)
 DESCRIPTOR_TYPES_DISPLAY = {}
 for item in DESCRIPTOR_TYPES:
-    DESCRIPTOR_TYPES_DISPLAY[item] = item.replace('Descriptor', '')
+    DESCRIPTOR_TYPES_DISPLAY[item] = item.replace('SSODescriptor', '')
 
 DESCRIPTOR_TYPES_UTIL = ["md:%s" % item for item in DESCRIPTOR_TYPES]
 
