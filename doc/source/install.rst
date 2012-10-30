@@ -160,18 +160,17 @@ You need to put your IDP metadata in ``saml/remote_metadata.xml`` or, if you
 modified the ``SAML_CONFIG.metatadata.local`` setting, in the proper path.
 
 Set a saml2 user as superuser
-----------------------------
+-----------------------------
 
-Before the user exists, you can create the user as superuser without password
-with this
-command en virtualenv enabled:
+If the user doesn't exists, you can create it already as superuser without a
+password using this command in the correct environment:
+
 
 .. code-block:: bash
 
   python manage.py createsuperuser --username super@example.com \
      --email=supera@example.com --noinput
 
-
-If you have some errors related with djangosaml2.log file, you must set
-/tmp/djangosaml2.log writable for the user that execute your manage.py
-command
+If this fails and some errors appear related to the  djangosaml2.log file, then
+you must change the permissions of the /tmp/djangosaml2.log file and make it
+writable by the user that executes your manage.py command.
