@@ -57,6 +57,8 @@
     {% for organization in entity.organization %}
       {% if organization.URL %}
        <li><a href="{{ organization.URL }}">{{ organization.displayName }} [{{ organization.lang }}]</a></li>
+      {% else %}
+       <li>{{ organization.displayName }} [{{ organization.lang }}]</li>
       {% endif %}
     {% endfor %}
    </ul>
