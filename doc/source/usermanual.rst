@@ -43,6 +43,10 @@ match, the new file will be processed.
 The processing of metadata files consists on creating entities and link them
 to their corresponding federations.
 
+A federation can be a interfederation, a group of federations. A
+interfederation has same views, edit and permissions that federations. It's
+only take effect in index view.
+
 Creating entities
 *****************
 
