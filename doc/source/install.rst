@@ -15,7 +15,6 @@ System packages (ubuntu-1204)
 * python-imaging
 * libjpeg-dev
 * libpng-dev
-* memcached
 * postgresql
 * libapache2-mod-wsgi
 * build-essential
@@ -112,7 +111,6 @@ http://httpd.apache.org/docs/2.2/mod/core.html#allowencodedslashes
 
     AllowEncodedSlashes NoDecode
 
-
     WSGIScriptAlias / /home/met/met/django-wsgi.py
 
     <Directory /home/met/met/django-wsgi.py>
@@ -151,7 +149,7 @@ other purposes you should buy them. How to create the certificates:
 
 .. code-block:: bash
 
-   openssl genrsa -des3 -out server.key 1024
+   openssl genrsa -des3 -out server.key 2048
    openssl req -new -key server.key -out server.csr
    cp server.key server.key.org
    openssl rsa -in server.key.org -out server.key

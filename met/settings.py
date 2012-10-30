@@ -155,18 +155,36 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'saml2file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/djangosaml2.log',
+            'formatter': 'verbose',
+         }
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+         'djangosaml2': {
+             'handlers': ['saml2file'],
+             'level': 'DEBUG',
         },
     }
 }
@@ -190,20 +208,13 @@ AUTHENTICATION_BACKENDS = (
     'djangosaml2.backends.Saml2Backend',
 )
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 60,
-    }
-}
-
 PAGE_LENGTH = 25
-
 
 SAML2DIR = os.path.join(BASEDIR, 'saml2')
 
 SAML_CREATE_UNKNOWN_USER = True
+
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'email'
 
 SAML_ATTRIBUTE_MAPPING = {
     'mail': ('username', 'email', ),

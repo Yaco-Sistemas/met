@@ -56,10 +56,9 @@ setup(name='met',
           'psycopg2==2.4.5',
           'lxml==2.3.5',
           'PIL',
-          'python-memcached',
-          'requests',
-          'djangosaml2',
-          'django-pagination',
+          'requests==0.14.1',
+          'djangosaml2==0.8.0',
+          'django-pagination==1.0.7',
       ],
       entry_points="""
       # -*- Entry points: -*-
