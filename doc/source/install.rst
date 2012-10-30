@@ -158,3 +158,20 @@ other purposes you should buy them. How to create the certificates:
 
 You need to put your IDP metadata in ``saml/remote_metadata.xml`` or, if you
 modified the ``SAML_CONFIG.metatadata.local`` setting, in the proper path.
+
+Set asaml2 user as superuser
+----------------------------
+
+Before the user exists, you can create the user as superuser without password
+with this
+command en virtualenv enabled:
+
+.. code-block:: bash
+
+  python manage.py createsuperuser --username super@example.com \
+     --email=supera@example.com --noinput
+
+
+If you have some errors related with djangosaml2.log file, you must set
+/tmp/djangosaml2.log writable for the user that execute your manage.py
+command
