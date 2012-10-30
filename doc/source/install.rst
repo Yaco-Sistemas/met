@@ -159,7 +159,7 @@ other purposes you should buy them. How to create the certificates:
 You need to put your IDP metadata in ``saml/remote_metadata.xml`` or, if you
 modified the ``SAML_CONFIG.metatadata.local`` setting, in the proper path.
 
-Set asaml2 user as superuser
+Set a saml2 user as superuser
 ----------------------------
 
 Before the user exists, you can create the user as superuser without password
