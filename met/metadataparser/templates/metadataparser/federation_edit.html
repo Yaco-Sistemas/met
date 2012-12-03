@@ -12,11 +12,12 @@
 {% block content %}
 {% if form.instance.id %}
   {% url federation_delete form.instance.slug as delete_link %}
-  {% url federation_view form.instance.slug as cancel_link %}
+  {% bootstrap_form form cancel_link=form.instance.get_absolute_url delete_link=delete_link %}
 {% else %}
-  {% url federations_list as cancel_link %}
+  {% url index as cancel_link %}
+  {% bootstrap_form form cancel_link delete_link="" %}
 {% endif %}
-{% bootstrap_form form cancel_link delete_link %}
+
 {% endblock %}
 
 {% block extrajs %}

@@ -10,13 +10,12 @@
 {% endblock %}
 
 {% block content %}
-{% if form.instance.id %}
-  {% url entity_delete form.instance.id as delete_link %}
-  {% url form.instance.get_absolute_url as cancel_link %}
-{% else %}
-  {% url federation.get_absolute_url as cancel_link %}
-{% endif %}
-{% bootstrap_form form cancel_link delete_link %}
+  {% if form.instance.id %}
+    {% url entity_delete delete_linkform.instance.id as delete_link %}
+    {% bootstrap_form form cancel_link=form.instance.get_absolute_url delete_link=delete_link %}
+  {% else %}
+    {% bootstrap_form form cancel_link=federation.get_absolute_url delete_link=delete_link %}
+  {% endif %}
 {% endblock %}
 
 
