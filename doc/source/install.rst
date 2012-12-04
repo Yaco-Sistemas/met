@@ -179,8 +179,8 @@ writable by the user that executes your manage.py command.
 Customizations
 ==============
 
-Customize About page
-********************
+Customize /about page
+*********************
 
 We are going to create a new about.html template that overwrite the default
 about template. To this, you must ensure that exist this block in your
@@ -200,7 +200,7 @@ BASEDIR is the directory where local_settings.py and met-wsgi.py exist. Then,
 we need to create a directory called templates and a file called about.html on
 it. The about.html file must have this content:
 
-.. code-block:: html
+::
 
   {% extends "base.html" %}
 
@@ -208,4 +208,5 @@ it. The about.html file must have this content:
   <p>This is your custom content</p>
   {% endblock %}
 
-You can write all you want between block and endblock tags
+
+You can write all you want between block and endblock tags.
