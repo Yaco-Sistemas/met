@@ -111,9 +111,9 @@ http://httpd.apache.org/docs/2.2/mod/core.html#allowencodedslashes
 
     AllowEncodedSlashes NoDecode
 
-    WSGIScriptAlias / /home/met/met/django-wsgi.py
+    WSGIScriptAlias / /home/met/met/met-wsgi.py
 
-    <Directory /home/met/met/django-wsgi.py>
+    <Directory /home/met/met/met-wsgi.py>
     Order allow,deny
     Allow from all
     </Directory>
