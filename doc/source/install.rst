@@ -202,10 +202,10 @@ it. The about.html file must have this content:
 
 .. code-block:: html
 
-{% extends "base.html" %}
+  {% extends "base.html" %}
 
-{% block content %}
-<p>This is your custom content</p>
-{% endblock %}
+  {% block content %}
+  <p>This is your custom content</p>
+  {% endblock %}
 
 You can write all you want between block and endblock tags
