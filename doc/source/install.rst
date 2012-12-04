@@ -174,3 +174,38 @@ password using this command in the correct environment:
 If this fails and some errors appear related to the  djangosaml2.log file, then
 you must change the permissions of the /tmp/djangosaml2.log file and make it
 writable by the user that executes your manage.py command.
+
+
+Customizations
+==============
+
+Customize About page
+********************
+
+We are going to create a new about.html template that overwrite the default
+about template. To this, you must ensure that exist this block in your
+local_settings.py (it is already set in local_settings.example.py provides by
+this package)
+
+.. code-block:: python
+
+  TEMPLATE_DIRS = (
+      # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+      # Always use forward slashes, even on Windows.
+      # Don't forget to use absolute paths, not relative paths.
+      os.path.join(BASEDIR, 'templates'),
+  )
+
+BASEDIR is the directory where local_settings.py and met-wsgi.py exist. Then,
+we need to create a directory called templates and a file called about.html on
+it. The about.html file must have this content:
+
+.. code-block:: html
+
+{% extends "base.html" %}
+
+{% block content %}
+<p>This is your custom content</p>
+{% endblock %}
+
+You can write all you want between block and endblock tags
