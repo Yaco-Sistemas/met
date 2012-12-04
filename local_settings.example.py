@@ -1,9 +1,9 @@
-mport os
+import os
 import saml2
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 
-DEBUG = False
+DEBUG = True
 #DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -29,6 +29,14 @@ INTERNAL_IPS = ('192.168.122.1',)
 
 MEDIA_ROOT = os.path.join(os.environ.get('HOME', '/home/met'), 'media')
 STATIC_ROOT = os.path.join(os.environ.get('HOME', '/home/met'), 'static')
+
+
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(BASEDIR, 'templates'),
+)
 
 
 SAML_ATTRIBUTE_MAPPING = {
