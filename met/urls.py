@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
-
 from django.contrib import admin
+from django.views.generic import TemplateView
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -11,6 +12,8 @@ urlpatterns = patterns('',
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
     url(r'^saml2/', include('djangosaml2.urls')),
     url(r'^admin/', include(admin.site.urls)),
