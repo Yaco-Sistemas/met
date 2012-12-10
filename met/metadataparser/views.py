@@ -86,7 +86,7 @@ def federation_edit(request, federation_slug=None):
                 form.instance.editor_users.add(request.user)
             if 'file' in form.changed_data or 'file_url' in form.changed_data:
                 form.instance.process_metadata()
-                form.instance.process_metadata_entities()
+                form.instance.process_metadata_entities(request=request)
             if federation:
                 messages.success(request, _('Federation modified succesfully'))
             else:

@@ -114,6 +114,11 @@ class MetadataParser(object):
 
         return entity
 
+    def entity_exist(self, entityid):
+        entity_xpath = self.etree.xpath("//md:EntityDescriptor[@entityID='%s']"
+                                         % entityid, namespaces=NAMESPACES)
+        return (len(entity_xpath) > 0)
+
     def get_entities(self):
         # Return entityid list
         return self.etree.xpath("//@entityID")

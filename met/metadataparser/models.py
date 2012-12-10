@@ -3,6 +3,7 @@ import requests
 from urlparse import urlsplit
 from urllib import quote_plus
 
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -11,6 +12,7 @@ from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from met.metadataparser.utils import compare_filecontents
@@ -124,8 +126,19 @@ class Federation(Base):
 
         update_obj(metadata.get_federation(), self)
 
-    def process_metadata_entities(self):
-        for m_id in self._metadata.get_entities():
+    def process_metadata_entities(self, request=None):
+        entities_from_xml = self._metadata.get_entities()
+
+        for entity in self.entity_set.all():
+            """Remove entity relation if does not exist in metadata"""
+            if not self._metadata.entity_exist(entity.entityid):
+                self.entity_set.remove(entity)
+                if request and not entity.federations.exists():
+                    messages.warning(request,
+                        mark_safe(_("Orphan entity: <a href='%s'>%s</a>" %
+                                (entity.get_absolute_url(), entity.entityid))))
+
+        for m_id in entities_from_xml:
             try:
                 entity = self.get_entity(entityid=m_id)
             except Entity.DoesNotExist:
