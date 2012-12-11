@@ -1,3 +1,4 @@
+import re
 from urllib import unquote
 
 from django.contrib import messages
@@ -16,6 +17,8 @@ from met.metadataparser.summary_export import export_summary
 from met.metadataparser.query_export import export_query_set
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
+
+RESCUE_SLASH = re.compile(r"^(http(?:|s):/)([^/])")
 
 def index(request):
     federations = Federation.objects.filter(is_interfederation=False)
@@ -125,6 +128,7 @@ def federation_delete(request, federation_slug):
 
 def entity_view(request, entityid):
     entityid = unquote(entityid)
+    entityid = RESCUE_SLASH.sub("\\1/\\2", entityid)
     entity = get_object_or_404(Entity, entityid=entityid)
 
     return render_to_response('metadataparser/entity_view.html',

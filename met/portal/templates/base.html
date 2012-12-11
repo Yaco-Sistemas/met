@@ -22,10 +22,10 @@
             <li class="divider-vertical"></li>
             <li><p class="navbar-text">{{ request.user }}</p></li>
             <li class="divider-vertical"></li>
-            <li><p class="navbar-text"><a href="{{ portal_settings.LOGOUT_URL }}?next={{ request.path }}">{% trans "Logout" %}</a></p></li>
+            <li><p class="navbar-text"><a href="{{ portal_settings.LOGOUT_URL }}?next={{ request.get_full_path|iriencode }}">{% trans "Logout" %}</a></p></li>
           {% else %}
             <li class="divider-vertical"></li>
-            <li><a href="{{ portal_settings.LOGIN_URL }}?next={{ request.path }}">{% trans "login" %}</a></li>
+            <li><a href="{{ portal_settings.LOGIN_URL }}?next={{ request.get_full_path|iriencode }}">{% trans "login" %}</a></li>
           {% endif %}
           </ul>
           <form class="navbar-search pull-right"
