@@ -33,10 +33,11 @@ def federations_summary(context, queryname, federations=None):
 
 
 @register.inclusion_tag('metadataparser/tag_entity_list.html', takes_context=True)
-def entity_list(context, entities):
+def entity_list(context, entities, show_total=True):
     return {'request': context.get('request', None),
             'entities': entities,
             'show_filters': context.get('show_filters'),
+            'show_total': show_total,
             'entity_types': DESCRIPTOR_TYPES}
 
 
@@ -74,7 +75,7 @@ def entity_filter_url(base_path, filter, otherparams=None):
 
 
 @register.inclusion_tag('metadataparser/export-menu.html', takes_context=True)
-def export_menu(context, entities):
+def export_menu(context, entities, append_query=None):
     request = context.get('request')
     copy_query = request.GET.copy()
     if 'page' in copy_query:
@@ -85,9 +86,11 @@ def export_menu(context, entities):
     for mode in export_modes.keys():
         url = base_path
         if query:
-            url += '?%s&format=%s' % (query, mode)
+            url += '?%s&format=%s' % (query, append_query, mode)
         else:
             url += '?format=%s' % (mode)
+        if append_query:
+            url += "&%s" % (append_query)
         formats.append({'url': url, 'label': mode})
 
     return {'formats': formats}

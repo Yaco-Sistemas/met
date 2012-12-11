@@ -4,8 +4,10 @@
 {% entity_filters entities %}
 {% endif %}
 
-{% export_menu entities %}
+{% export_menu entities append_query="export=most_federated_entities" %}
+{% if show_total %}
 <p><strong>{% trans "Total" %}:</strong> {{ entities|length }}</p>
+{% endif %}
 
 {% if enable_filters %}
 <p class="text-muted">

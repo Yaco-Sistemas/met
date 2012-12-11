@@ -22,14 +22,19 @@ of IDP and SP can be bigger than the number of entities
     </tr>
   </thead>
   <tbody>
-  <tr>
-    <td>{% entities_count entities %}</td>
-    {% for etype in entity_types %}
-    <td class="entitytype">{% entities_count entities etype %}</td>
-    {% endfor %}
-  </tr>
-</tbody>
+    <tr>
+      <td>{% entities_count entities %}</td>
+      {% for etype in entity_types %}
+      <td class="entitytype">{% entities_count entities etype %}</td>
+      {% endfor %}
+    </tr>
+  </tbody>
 </table>
+</div>
+
+<div class="summary">
+  <h2>{% trans "Entities which belongs to most federations" %}</h2>
+  {% entity_list most_entities_federated show_total=False %}
 </div>
 
 {% if interfederations %}
