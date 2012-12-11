@@ -3,11 +3,14 @@ import requests
 from urlparse import urlsplit
 from urllib import quote_plus
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.cache import get_cache
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Count
 from django.db.models.signals import pre_save
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
@@ -18,6 +21,8 @@ from django.utils.translation import ugettext_lazy as _
 from met.metadataparser.utils import compare_filecontents
 from met.metadataparser.xmlparser import MetadataParser, DESCRIPTOR_TYPES_DISPLAY
 
+
+TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
 
 def update_obj(mobj, obj, attrs=None):
     for_attrs = attrs or getattr(mobj, 'all_attrs', [])
@@ -304,6 +309,25 @@ class Entity(Base):
         for federation in self.federations.all():
             if federation.can_edit(user):
                 return True
+
+    @classmethod
+    def get_most_federated_entities(self, maxlength=TOP_LENGTH, cache_expire=None):
+
+        entities = None
+        if cache_expire:
+            cache = get_cache("default")
+            entities = cache.get("most_federated_entities")
+
+        if not entities:
+            # Entities with count how many federations belongs to, and sorted by most first
+            entities = Entity.objects.all().annotate(
+                                 federationslength=Count("federations")).order_by("-federationslength")[:maxlength]
+
+        if cache_expire:
+            cache = get_cache("default")
+            cache.set("most_federated_entities", entities, cache_expire)
+
+        return entities
 
     def get_absolute_url(self):
         return reverse('entity_view', args=[quote_plus(self.entityid)])

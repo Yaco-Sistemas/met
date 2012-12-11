@@ -2,12 +2,10 @@ from urllib import unquote
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 
 from met.metadataparser.decorators import user_can_edit
 from met.metadataparser.models import Federation, Entity
@@ -19,17 +17,13 @@ from met.metadataparser.query_export import export_query_set
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
 
-TOP_LENGTH = getattr(settings, "TOP_LENGTH", 5)
-
-
 def index(request):
     federations = Federation.objects.filter(is_interfederation=False)
 
     interfederations = Federation.objects.filter(is_interfederation=True)
 
     # Entities with count how many federations belongs to, and sorted by most first
-    most_entities_federated = Entity.objects.all().annotate(
-            federationslength=Count("federations")).order_by("-federationslength")[:TOP_LENGTH]
+    most_federated_entities = Entity.get_most_federated_entities(cache_expire=(24 * 60 * 60))
 
     export = request.GET.get('export', None)
     format = request.GET.get('format', None)
@@ -49,8 +43,8 @@ def index(request):
                                   'entity_set', 'federations_summary',
                                   counters)
         elif export == 'most_federated_entities':
-            return export_query_set(request.GET.get('format'), most_entities_federated,
-                                'most_entities_federated', ('', 'types', 'federations'))
+            return export_query_set(request.GET.get('format'), most_federated_entities,
+                                'most_federated_entities', ('', 'types', 'federations'))
         else:
             return HttpResponseBadRequest('Not valid export query')
 
@@ -59,7 +53,7 @@ def index(request):
            'federations': federations,
            'entities': Entity.objects.all(),
            'entity_types': DESCRIPTOR_TYPES,
-           'most_entities_federated': most_entities_federated,
+           'most_federated_entities': most_federated_entities,
            }, context_instance=RequestContext(request))
 
 
