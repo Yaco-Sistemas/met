@@ -303,6 +303,14 @@ class Entity(Base):
                 if entity_type not in self.types.all():
                     self.types.add(entity_type)
 
+    def to_dict(self):
+        self.description
+        entity = self._entity_cached.copy()
+        entity["types"] = [(unicode(f)) for f in self.types.all()]
+        entity["federations"] = [{u"name": unicode(f), u"url":f.get_absolute_url()}
+                                    for f in self.federations.all()]
+        return entity
+
     def can_edit(self, user):
         if super(Entity, self).can_edit(user):
             return True

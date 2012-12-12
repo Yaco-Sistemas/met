@@ -11,55 +11,84 @@ def export_entity_csv(entity):
     response['Content-Disposition'] = ('attachment; filename=%s.csv'
                                        % slugify(entity))
     writer = csv.writer(response)
-    labels = ['name']
-    labels.extend([label for (label, ff) in counters])
-    writer.writerow(labels)
+    edict = entity.to_dict()
+
+    writer.writerow(edict.keys())
     # Write data to CSV file
-    for obj in qs:
-        row = [unicode(obj)]
-        for (counter_label, counter_filter) in counters:
-            row.append(getattr(obj, relation).filter(**counter_filter).count())
-        writer.writerow(row)
+    row = []
+    for (key, value) in edict.items():
+        if type(value) is list:
+            if len(value) > 0 and type(value[0]) == dict:
+                row.append(", ".join([v.values()[0] for v in value]))
+            else:
+                row.append(", ".join(value))
+        elif type(value) in (str, int):
+            row.append(value)
+        elif type(value) is unicode:
+            row.append(value.encode("ascii", "ignore"))
+        elif type(value) is dict:
+            row.append(", ".join(value.values()))
+
+    row_ascii = [v.encode("ascii", "ignore") for v in row]
+
+    writer.writerow(row_ascii)
     # Return CSV file to browser as download
     return response
 
 
-def export_entity_json(qs, relation, filename, counters=None):
-    objs = {}
-    for obj in qs:
-        item = {}
-        for (counter_label, counter_filter) in counters:
-            item[counter_label] = getattr(obj, relation).filter(**counter_filter).count()
-        objs[unicode(obj)] = item
+def export_entity_json(entity):
     # Return JS file to browser as download
-    serialized = json.dumps(objs)
+    serialized = json.dumps(entity.to_dict())
     response = HttpResponse(serialized, mimetype='application/json')
     response['Content-Disposition'] = ('attachment; filename=%s.json'
                                        % slugify(entity))
     return response
 
 
-def export_entity_xml(qs, relation, filename, counters):
-    model = qs.model
+class dict2xml(object):
+    """ http://stackoverflow.com/questions/1019895/serialize-python-dictionary-to-xml """
+    doc = Document()
 
-    xml = Document()
-    root = xml.createElement(filename)
-    xml.appendChild(root)
-    # Write data to CSV file
-    for obj in qs:
-        item = xml.createElement(model._meta.object_name)
-        item.setAttribute("id", unicode(obj))
-        for (counter_label, counter_filter) in counters:
-            val = getattr(obj, relation).filter(**counter_filter).count()
-            element = xml.createElement(counter_label)
-            xmlval = xml.createTextNode(unicode(val))
-            element.appendChild(xmlval)
-            item.appendChild(element)
+    def __init__(self, structure):
+        if len(structure) == 1:
+            rootName = str(structure.keys()[0])
+            self.root = self.doc.createElement(rootName)
 
-        root.appendChild(item)
+            self.doc.appendChild(self.root)
+            self.build(self.root, structure[rootName])
+
+    def build(self, father, structure):
+        if type(structure) == dict:
+            for k in structure:
+                tag = self.doc.createElement(k)
+                father.appendChild(tag)
+                self.build(tag, structure[k])
+
+        elif type(structure) == list:
+            grandFather = father.parentNode
+            tagName = father.tagName
+            grandFather.removeChild(father)
+            for l in structure:
+                tag = self.doc.createElement(tagName)
+                self.build(tag, l)
+                grandFather.appendChild(tag)
+        else:
+            if type(structure) == unicode:
+                data = structure.encode("ascii", errors="xmlcharrefreplace")
+            else:
+                data = str(structure)
+            tag = self.doc.createTextNode(data)
+            father.appendChild(tag)
+
+    def __str__(self):
+        return self.doc.toprettyxml(indent=" ")
+
+
+def export_entity_xml(entity):
+    entity_xml = dict2xml({"Entity": entity.to_dict()})
 
     # Return XML file to browser as download
-    response = HttpResponse(xml.toxml(), mimetype='application/xml')
+    response = HttpResponse(str(entity_xml), mimetype='application/xml')
     response['Content-Disposition'] = ('attachment; filename=%s.xml'
                                        % slugify(entity))
     return response
