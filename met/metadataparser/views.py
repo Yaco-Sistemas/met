@@ -14,6 +14,7 @@ from met.metadataparser.forms import (FederationForm, EntityForm,
 
 from met.metadataparser.summary_export import export_summary
 from met.metadataparser.query_export import export_query_set
+from met.metadataparser.entity_export import export_entity
 from met.metadataparser.xmlparser import DESCRIPTOR_TYPES
 
 
@@ -118,6 +119,9 @@ def federation_delete(request, federation_slug):
 def entity_view(request, entityid):
     entityid = unquote(entityid)
     entity = get_object_or_404(Entity, entityid=entityid)
+
+    if 'format' in request.GET:
+        return export_entity(request.GET.get('format'), entity)
 
     return render_to_response('metadataparser/entity_view.html',
             {'entity': entity,
