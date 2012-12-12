@@ -31,24 +31,24 @@
   {% endif %}
 {% endfor %}
 
-<ul class="unstyled">
+<ul class="entity unstyled">
   {% if entity.description %}
   <li>
-    <strong>{% trans "Description" %}: </strong>{% l10n_property entity.description %}
+    <strong class="labelview">{% trans "Description" %}: </strong>{% l10n_property entity.description %}
   </li>
   {% endif %}
 
   <li>
-  <strong>{% trans "EntityID" %}: </strong>{{ entity.entityid }}
+  <strong class="labelview">{% trans "EntityID" %}: </strong>{{ entity.entityid }}
   </li>
 
   <li>
-  <strong>{% trans "Entity Types" %}: </strong>{{ entity.types|display_etype }}
+  <strong class="labelview">{% trans "Entity Types" %}: </strong>{{ entity.types|display_etype }}
   </li>
 
   {% if entity.protocols %}
   <li>
-  <strong>{% trans "Supported protocols" %}: </strong>
+  <strong class="labelview">{% trans "Supported protocols" %}: </strong>
   <ul>
     {% for proto in entity.display_protocols %}
       <li>{{ proto }}</li>
@@ -59,7 +59,7 @@
 
   {% if entity.organization %}
   <li>
-  <strong>{% trans "Organization" %}: </strong>
+  <strong class="labelview">{% trans "Organization" %}: </strong>
     <ul>
     {% for organization in entity.organization %}
       {% if organization.URL %}
@@ -73,7 +73,7 @@
   {% endif %}
 
   <li>
-  <strong>{% trans "Federations" %}: </strong>
+  <strong class="labelview">{% trans "Federations" %}: </strong>
     <ul>
       {% for federation in entity.federations.all %}
       <li><a href="{% url federation_view federation.slug %}">{{ federation }}</a></li>
@@ -83,4 +83,3 @@
 </ul>
 
 {% endblock %}
-

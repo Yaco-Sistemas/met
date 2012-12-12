@@ -13,6 +13,25 @@ h3 {
     line-height: 20px;
 }
 
+
+body {
+    font-size: 16px;
+}
+
+ul.entity {
+    margin: 20px 0;
+}
+
+ul.entity li {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+ul.entity li strong.labelview {
+    display: block;
+    margin-bottom: 5px;
+}
+
 div.controls ul {
     list-style: none outside none;
     margin-left: 0;
