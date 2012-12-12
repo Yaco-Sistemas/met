@@ -3,15 +3,24 @@
 
 {% block content %}
 
-<p class="text-muted">
-{% blocktrans %}
-Remember that one entity can be IDP and SP at the same time, so the addition
-of IDP and SP can be bigger than the number of entities
-{% endblocktrans %}
-</p>
+
+<ul class="nav nav-pills">
+  <li>
+    <a href="#entitiessummary">{% trans "Entities summary" %}</a>
+  </li>
+  <li>
+    <a href="#mostfederatedentities">{% trans "Most federated entities" %}</a>
+  </li>
+  <li>
+    <a href="#interfederationsummary">{% trans "Interfederations summary" %}</a>
+  </li>
+  <li>
+    <a href="#federationssummary">{% trans "Federations summary" %}</a>
+  </li>
+</ul>
 
 <div class="summary">
-<h2>{% trans "Entities summary" %}</h2>
+<h2 id="entitiessummary">{% trans "Entities summary" %}</h2>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -33,21 +42,27 @@ of IDP and SP can be bigger than the number of entities
 </div>
 
 <div class="summary">
-  <h2>{% trans "Most federated entities" %}</h2>
+  <h2 id="mostfederatedentities">{% trans "Most federated entities" %}</h2>
   {% entity_list most_federated_entities show_total=False %}
 </div>
 
 {% if interfederations %}
 <div class="summary">
-<h2>{% trans "Interfederations summary" %}</h2>
+<h2 id="interfederationsummary">{% trans "Interfederations summary" %}</h2>
 {% federations_summary "interfederations" interfederations %}
 </div>
 {% endif %}
 
 <div class="summary">
-<h2>{% trans "Federations summary" %}</h2>
+<h2 id="federationssummary">{% trans "Federations summary" %}</h2>
 {% federations_summary "federations" federations %}
 </div>
 
+<p class="text-muted">
+{% blocktrans %}
+Remember that one entity can be IDP and SP at the same time, so the addition
+of IDP and SP can be bigger than the number of entities
+{% endblocktrans %}
+</p>
 
 {% endblock %}
