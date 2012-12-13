@@ -59,6 +59,7 @@ setup(name='met',
           'requests==0.14.1',
           'djangosaml2==0.9.0',
           'django-pagination==1.0.7',
+          'python-memcached',
       ],
       entry_points="""
       # -*- Entry points: -*-
