@@ -22,6 +22,7 @@ System packages (ubuntu-1204)
 * libxslt-dev
 * libpq-dev
 * xmlsec1
+* memcached
 
 
 Create database
@@ -117,6 +118,23 @@ http://httpd.apache.org/docs/2.2/mod/core.html#allowencodedslashes
     Order allow,deny
     Allow from all
     </Directory>
+
+
+Enable memcached
+****************
+
+Memcached is disabled in the local_settings.example.py configuration. Find the
+block *CACHES* in your local_settings.py file and set it as follow:
+
+
+.. code-block:: python
+
+   CACHES = {
+       'default': {
+           'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+           'LOCATION'': '127.0.0.1:11211',
+       }
+   }
 
 
 Initialize media directory
