@@ -309,6 +309,11 @@ class Entity(Base):
         entity["types"] = [(unicode(f)) for f in self.types.all()]
         entity["federations"] = [{u"name": unicode(f), u"url":f.get_absolute_url()}
                                     for f in self.federations.all()]
+        if "file_id" in entity.keys():
+            del entity["file_id"]
+        if "entity_types" in entity.keys():
+            del entity["entity_types"]
+
         return entity
 
     def can_edit(self, user):
