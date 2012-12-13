@@ -91,6 +91,13 @@ Available Queries
        ${base_url}/met/search_service/?entityid=${word_to_search}&format=${format}
 
 
+3. Most federated entities:
+
+   Description
+       Three most federated entities
+   url
+       ${base_url}/?format=json&export=most_federated_entities:
+
 
 Output information provide
 --------------------------
