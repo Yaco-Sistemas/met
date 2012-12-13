@@ -96,7 +96,7 @@ Available Queries
    Description
        Three most federated entities
    url
-       ${base_url}/?format=json&export=most_federated_entities:
+       ${base_url}/?format=${format}&export=most_federated_entities:
 
 
 Output information provide
