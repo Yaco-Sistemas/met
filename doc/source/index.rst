@@ -13,6 +13,7 @@ Contents:
 
    install
    usermanual
+   api
 
 
 Indices and tables
