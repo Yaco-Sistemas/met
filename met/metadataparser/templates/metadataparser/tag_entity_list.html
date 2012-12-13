@@ -4,7 +4,7 @@
 {% entity_filters entities %}
 {% endif %}
 
-{% export_menu entities append_query="export=most_federated_entities" %}
+{% export_menu entities append_query=append_query %}
 {% if show_total %}
 <p><strong>{% trans "Total" %}:</strong> {{ entities|length }}</p>
 {% endif %}

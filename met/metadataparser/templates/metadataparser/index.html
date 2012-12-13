@@ -43,7 +43,7 @@
 
 <div class="summary">
   <h2 id="mostfederatedentities">{% trans "Most federated entities" %}</h2>
-  {% entity_list most_federated_entities show_total=False %}
+  {% entity_list most_federated_entities show_total=False append_query="export=most_federated_entities" %}
 </div>
 
 {% if interfederations %}
