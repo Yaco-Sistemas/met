@@ -208,7 +208,7 @@ def search_service(request):
         if filters:
             objects = Entity.objects.filter(**filters)
 
-    if objects and 'format' in request.GET:
+    if objects and 'format' in request.GET.keys():
         return export_query_set(request.GET.get('format'), objects,
                                 'entities_search_result', ('', 'types', 'federations'))
 

@@ -86,7 +86,7 @@ def export_menu(context, entities, append_query=None):
     for mode in export_modes.keys():
         url = base_path
         if query:
-            url += '?%s&format=%s' % (query, append_query, mode)
+            url += '?%s&format=%s' % (query, mode)
         else:
             url += '?format=%s' % (mode)
         if append_query:
