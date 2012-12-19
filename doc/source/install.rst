@@ -132,7 +132,7 @@ block *CACHES* in your local_settings.py file and set it as follow:
    CACHES = {
        'default': {
            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-           'LOCATION'': '127.0.0.1:11211',
+           'LOCATION': '127.0.0.1:11211',
        }
    }
 
