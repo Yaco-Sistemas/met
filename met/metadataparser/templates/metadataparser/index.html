@@ -1,20 +1,37 @@
 {% extends "base.html" %}
 {% load i18n metadataparsertags %}
 
+
+{% block extrajs %}
+<script type="text/javascript">
+(function($) {
+     $(document).ready(function () {
+         $("ul.querybuttons a").click(function (e) {
+             e.preventDefault();
+             $('html, body').animate({
+                 scrollTop: $($(e.target).attr("href")).offset().top
+             }, 'slow');
+        });
+     });
+})(jQuery);
+</script>
+{% endblock %}
+
+
 {% block content %}
 
 
-<ul class="nav nav-pills">
-  <li>
+<ul class="querybuttons nav nav-pills">
+  <li class="active">
     <a href="#entitiessummary">{% trans "Entities summary" %}</a>
   </li>
-  <li>
+  <li class="active">
     <a href="#mostfederatedentities">{% trans "Most federated entities" %}</a>
   </li>
-  <li>
+  <li class="active">
     <a href="#interfederationsummary">{% trans "Interfederations summary" %}</a>
   </li>
-  <li>
+  <li class="active">
     <a href="#federationssummary">{% trans "Federations summary" %}</a>
   </li>
 </ul>

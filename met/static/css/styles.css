@@ -13,8 +13,9 @@ h3 {
     line-height: 20px;
 }
 
-body {
-    font-size: 16px;
+ul.querybuttons li {
+    margin-left: 2.5em;
+    margin-right: 2.5em;
 }
 
 ul.entity {
