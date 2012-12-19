@@ -194,6 +194,39 @@ you must change the permissions of the /tmp/djangosaml2.log file and make it
 writable by the user that executes your manage.py command.
 
 
+Publishing Met Documentation
+****************************
+
+
+With enabled virtualenv, you need to install Sphinx package. You can install
+Sphinx with this command this:
+
+.. code-block:: bash
+
+   easy_install Sphinx
+
+
+Now, you need to build html from rst pages
+
+.. code-block:: bash
+
+   cd /home/met/met/doc
+   make html
+
+
+To publish generated html in your MET site, you can add this block to your
+apache site config.
+
+.. code-block:: text
+
+   Alias /doc /home/met/met/doc/build/html
+   <Directory /home/met/met/doc/build/html>
+      Options Indexes FollowSymlinks
+      Order deny,allow
+      Allow from all
+   </Directory>
+
+
 Customizations
 ==============
 
