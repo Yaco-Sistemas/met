@@ -197,25 +197,22 @@ writable by the user that executes your manage.py command.
 Publishing Met Documentation
 ****************************
 
-
-With enabled virtualenv, you need to install Sphinx package. You can install
-Sphinx with this command this:
+You have to install the Sphinx package inside a python virtualenv. You can install
+Sphinx with this command:
 
 .. code-block:: bash
 
    easy_install Sphinx
 
-
-Now, you need to build html from rst pages
+Now, you need to build the html from the rst pages:
 
 .. code-block:: bash
 
    cd /home/met/met/doc
    make html
 
-
-To publish generated html in your MET site, you can add this block to your
-apache site config.
+To publish the generated html in your MET site, you can add this block to your
+apache site configuration:
 
 .. code-block:: text
 
